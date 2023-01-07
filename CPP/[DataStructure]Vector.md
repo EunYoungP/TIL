@@ -201,30 +201,77 @@ struct MyObject
 //-------------------------------------------------------------------------------------------------
 class MyVector
 {
-private: 
+public:
+    class Iterator
+    {
+    private:
+
+        friend class MyVector;
+        MyObject* object;
+        size_t index;
+
+    public:
+
+        Iterator(MyObject* obj = nullptr, size_t idx = 0) :object(obj), index(idx) {}
+
+        ~Iterator() {}
+
+        Iterator& operator++() { ++index; return *this; }
+
+        Iterator& operator--() { --index; return *this; }
+
+        Iterator operator+(size_t s) { return Iterator(&object[index], index + s); }
+
+        Iterator operator-(size_t s) { return Iterator(&object[index], index - s); }
+
+        bool operator==(const Iterator& it) const noexcept { return &object[index] == &it.object[index]; }
+
+        bool operator!=(const Iterator& it) const noexcept { return &object[index] != &it.object[index]; }
+
+        MyObject& operator*() const { return object[index]; }
+
+        MyObject* operator->() const { return &object[index]; }
+    };
+
+private: // 구현에 필요한 멤버 추가 함수/변수들을 자유롭게 아래에 정의 합니다.
+
     MyObject* myObjects;
     size_t vectorSize;
     size_t vectorCapacity;
 
-    void GrowCapacity();
+    MyObject& Front();
 
+    MyObject& Back();
+
+    Iterator Begin();
+
+    Iterator End();
+
+    Iterator Erase(Iterator& it);
+
+    Iterator Erase(Iterator& start, Iterator& end);
+
+    Iterator Insert(Iterator& it, MyObject& obj);
+
+    bool Empty();
+    void Clear();
+
+    // 저장공간을 늘리는 함수입니다.
+    void GrowCapacity(size_t growCapacity);
+
+    // Object 배열의 값을 교환하는 함수입니다.
     void SwapObject(size_t swapL, size_t swapR);
 
-    void Sort(size_t lower, size_t upper);
+    // MyObject 배열을 퀵정렬하는 함수입니다.
+    void SortObejct(size_t lower, size_t upper);
 
-public:
-    class iterator
-    {
+public: // 생성자, 복사생성자, 할당연산자, 소멸자를 .cpp 파일에 구현합니다.
+ 
+    MyVector();
 
-    private:
-        friend class MyVector;
-    };
- 
-public: 
- 
     // Constructor.
     MyVector(int capacity);
- 
+
     // Copy constructor.
     MyVector(const MyVector& other);
  
@@ -234,24 +281,47 @@ public:
     // Destructor.
     ~MyVector();
  
-public: 
+public: // 아래 기능 함수들을 .cpp 파일에 구현합니다.
  
+    // Returns current capacity of this vector.
     int GetCapacity() const;
  
+    // Returns current size of this vector.
     int GetSize() const;
  
+    // Creates a new MyObject instance with the given ID, and appends it to the end of this vector.
+    // 지정된 ID로 새 MyObject 인스턴스를 만들고 이 벡터의 끝에 추가합니다.
     void Add(int id);
-
+ 
+    // Returns the first occurrence of MyObject instance with the given ID.
+    // 지정된 ID를 가진 MyObject 인스턴스의 첫 번째 항목을 반환합니다.
+    // Returns nullptr if not found.
     MyObject* FindById(int MyObjectId) const;
-
+ 
+    // Trims the capacity of this vector to current size.
+    // 이 벡터의 용량을 현재 크기로 자릅니다.
     void TrimToSize();
-
+ 
+    // Returns the MyObject instance at the specified index.
+    // 지정된 인덱스에 있는 MyObject 인스턴스를 반환합니다.
     MyObject& operator[](size_t index);
-
+ 
+    // Returns string representation of the vector.
+    // 벡터의 문자열 표현을 반환합니다.
     std::string ToString() const;
-
+ 
+    // Remove all MyObject instances with the given ID in this vector.
+    // 이 벡터에서 지정된 ID를 가진 모든 MyObject 인스턴스를 제거합니다.
     void RemoveAll(int MyObjectId);
-
+ 
+    // Returns a newly allocated array of MyVector objects,
+    // each of whose elements have the same "_id" value of the MyObject struct.
+    // The 'numGroups' is an out parameter, and its value should be set to
+    // the size of the MyVector array to be returned.
+    // 새로 할당된 MyVector 객체 배열을 반환합니다.
+    // 각각의 요소는 MyObject 구조체의 동일한 "_id" 값을 가집니다.
+    // 'numGroups'는 out 매개변수이며 해당 값은 다음으로 설정되어야 합니다.
+    // 반환할 MyVector 배열의 크기입니다.
     MyVector* GroupById(int* numGroups);
 };
 ```
@@ -263,6 +333,94 @@ __CPP파일__
 using namespace std;
 #include <iostream>
 #include <sstream>
+
+MyObject& MyVector::Front()
+{
+	return myObjects[0];
+}
+
+MyObject& MyVector::Back()
+{
+	return myObjects[vectorSize - 1];
+}
+
+MyVector::Iterator MyVector::Begin()
+{
+	return Iterator(myObjects);
+}
+
+MyVector::Iterator MyVector::End()
+{
+	return Iterator(myObjects, vectorSize);
+}
+
+MyVector::Iterator MyVector::Erase(Iterator& it)
+{
+	for (int i = it.index; i < vectorSize-1; i++)
+	{
+		myObjects[i] = myObjects[i + 1];
+	}
+	--vectorSize;
+}
+
+MyVector::Iterator MyVector::Erase(Iterator& start, Iterator& end)
+{
+	int count = 0;
+	for (int i = end.index; i < vectorSize; i++)
+	{
+		count++;
+		myObjects[start.index++] = myObjects[i];
+	}
+	vectorSize -= count;
+}
+
+MyVector::Iterator MyVector::Insert(Iterator& it, MyObject& obj)
+{
+	if (vectorCapacity <= vectorSize)
+	{
+		vectorCapacity *= 2;
+	}
+
+	MyObject* newObjects = new MyObject[vectorCapacity];
+
+	for (int i = 0; i < it.index; i++)
+	{
+		newObjects[i] = myObjects[i];
+	}
+	newObjects[it.index] = obj;
+	for (int i = it.index; i < vectorSize; i++)
+	{
+		newObjects[i+1] = myObjects[i];
+	}
+
+	delete[] myObjects;
+	myObjects = newObjects;
+
+	return Iterator(myObjects, it.index);
+}
+
+bool MyVector::Empty()
+{
+	return vectorSize == 0;
+}
+void MyVector::Clear()
+{
+	vectorSize = 0;
+}
+
+void MyVector::GrowCapacity(size_t growCapacity)
+{
+	if (growCapacity <= vectorCapacity)
+		return;
+
+	vectorCapacity = growCapacity;
+	MyObject* tempObjects = new MyObject[vectorCapacity];
+	myObjects = tempObjects;
+}
+
+MyVector:: MyVector()
+{
+}
 
 MyVector::MyVector(int capacity)
 {
@@ -321,7 +479,6 @@ int MyVector::GetSize() const
 	return this->vectorSize;
 }
 
-// 지정된 ID로 새 MyObject 인스턴스를 만들고 이 벡터의 끝에 추가합니다.
 void MyVector::Add(int id)
 {
 	if (vectorSize >= vectorCapacity)
@@ -341,7 +498,6 @@ void MyVector::Add(int id)
 	myObjects[vectorSize++] = *newObj;
 }
 
-// 지정된 ID를 가진 MyObject 인스턴스의 첫 번째 항목을 반환합니다.
 MyObject* MyVector::FindById(int MyObjectId) const
 {
 	for (int i = 0; i < vectorSize; i++)
@@ -352,7 +508,6 @@ MyObject* MyVector::FindById(int MyObjectId) const
 	return nullptr;
 }
 
-// 이 벡터의 용량을 현재 크기로 자릅니다.
 void MyVector::TrimToSize()
 {
 	if (vectorSize >= vectorCapacity)
@@ -369,13 +524,11 @@ void MyVector::TrimToSize()
 	vectorCapacity = vectorSize;
 }
 
-// 지정된 인덱스에 있는 MyObject 인스턴스를 반환합니다.
 MyObject& MyVector::operator[](size_t index)
 {
 	return myObjects[index];
 }
 
-// 벡터의 문자열 표현을 반환합니다.
 std::string MyVector::ToString() const
 {
 	std::stringstream ss;
@@ -390,7 +543,6 @@ std::string MyVector::ToString() const
 	return ss.str();
 }
 
-// 이 벡터에서 지정된 ID를 가진 모든 MyObject 인스턴스를 제거합니다.
 void MyVector::RemoveAll(int MyObjectId)
 {
 	for (int i = 0; i < vectorSize; i++)
@@ -401,6 +553,7 @@ void MyVector::RemoveAll(int MyObjectId)
 			{
 				myObjects[j] = myObjects[j + 1];
 			}
+			vectorSize--;
 		}
 	}
 }
@@ -412,7 +565,7 @@ void MyVector::SwapObject(size_t swapL, size_t swapR)
 	myObjects[swapR] = tempObj;
 }
 
-void MyVector::Sort(size_t lower, size_t upper)
+void MyVector::SortObejct(size_t lower, size_t upper)
 {
 	if (upper <= lower)
 		return;
@@ -439,36 +592,51 @@ void MyVector::Sort(size_t lower, size_t upper)
 		}
 
 		SwapObject(upper, start);
-		Sort(start, upper - 1);
-		Sort(upper, stop);
+		SortObejct(start, upper - 1);
+		SortObejct(upper, stop);
 	}
 }
 
-// 새로 할당된 MyVector 객체 배열을 반환합니다.
-// 각각의 요소는 MyObject 구조체의 동일한 "_id" 값을 가집니다.
-// 'numGroups'는 out 매개변수이며 해당 값은 다음으로 설정되어야 합니다.
-// 반환할 MyVector 배열의 크기입니다.
 MyVector* MyVector::GroupById(int* numGroups)
 {
 	if (myObjects == nullptr)
 		return;
 
-	// sort + unique
-	Sort(0, vectorSize - 1);
+	// 1. 벡터안의 오브젝트 구조체를 id 값에 따라 오름차순으로 정렬합니다.
+	SortObejct(0, vectorSize - 1);
 
-	int count = 0;
+	// 2. id 값을 기준으로 그룹화하여 임시 배열에 담아줍니다.
+	int objCount = 0;
+	int vectorCount = 1;
 	int tempId = myObjects[0]._id;
-	for (int i = 1; i < vectorSize; i++)
+	MyVector* tempVectors = new MyVector[vectorSize];
+
+	for (int i = 0; i < vectorSize; i++)
 	{
+		objCount++;
 		if (tempId != myObjects[i]._id)
 		{
-			count++;
-		}
-		else
-		{
+			MyVector myVector = MyVector(objCount);
+			for (int j = 0; j < objCount; j++)
+			{
+				myVector.Add(tempId);
+			}
+			tempVectors[i] = myVector;
 
+			tempId = myObjects[i]._id;
+			vectorCount++;
+			objCount = 0;
 		}
 	}
+
+	// 3. 임시 배열의 값들을 리턴 배열에 복사해줍니다.
+	MyVector* myVectors = new MyVector[vectorCount];
+	for (int i = 0; i < vectorCount; i++)
+	{
+		myVectors[i] = MyVector(tempVectors[i]);
+	}
+	*numGroups = vectorCount;
+	return myVectors;
 }
 ```
 
