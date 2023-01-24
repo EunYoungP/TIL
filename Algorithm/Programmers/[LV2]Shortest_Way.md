@@ -53,6 +53,7 @@ DFS는 깊이 우선으로 탐색하기 때문에 입력 크기가 작을때 유
 ## __수정답안__
 
 ```C++
+
 #include<vector>
 #include<queue>
 #include<iostream>
@@ -61,6 +62,8 @@ using namespace std;
 struct POS
 {
     int x, y;
+    
+    POS(int _x, int _y){x = _x; y = _y;}
 };
 
 int solution(vector<vector<int>> maps)
@@ -74,39 +77,52 @@ int solution(vector<vector<int>> maps)
     vector<int> xDir = {1,0,-1,0};
     vector<int> yDir = {0,1,0,-1};
         
-    vector<vector<bool>> visited;
+    vector<vector<bool>> visited(y,vector<bool>(x));
+    vector<vector<int>> dist(y,vector<int>(x));
     queue<POS> q;
     
-    q.push({0, 0});
-    int index = -1;
+    q.push(POS(0,0));
+    visited[0][0] = true;
+    dist[0][0] = 1;
+    
     while(!q.empty())
     {
         POS cur = q.front();
-        cout <<"q 값 : " << cur.x << " "<< cur.y << endl;
         q.pop();
         
-        if(cur.x == x-1 && cur.y ==y-1)
-            return index;
+        int curX = cur.x;
+        int curY = cur.y;
         
-        for(int i = 0; i < 4; i ++)
+        for(int i = 0; i < 4; i ++) 
         {
-            index++;
-            cout<< index << endl;
-            
-            int newX = x + xDir[i];
-            int newY = y + yDir[i];
+            int newX = curX + xDir[i];
+            int newY = curY + yDir[i];
 
-            if(newX >= maps[0].size()-1|| newX < 0 || newY >= maps.size()-1 || newY < 0)
+            if(newX >= x|| newX < 0 || newY >= y || newY < 0)
+            {
                 continue;
+            }
+                
             if(maps[newY][newX] == 0)
+            {
                 continue;
+            }
+                
             if(visited[newY][newX])
+            {
                 continue;
+            }
             
-            q.push({newY, newX});
+            q.push(POS(newX, newY));
+            visited[newY][newX] = true;
+            dist[newY][newX] = dist[curY][curX] + 1;
         }
     }
-    return answer;
+    
+    if(!visited[y-1][x-1])
+        return -1;
+    else
+        return dist[y-1][x-1];
 }
 ```
 
