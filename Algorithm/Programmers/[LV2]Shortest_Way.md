@@ -1,11 +1,17 @@
+2023.01
+
+# __[프로그래머스 LV4] 가장짧은거리__
+
+BFS/DFS
+---- 
+<BR>
+
+## __오답__
 ```c++
 #include<vector>
 #include<queue>
 using namespace std;
-
-
- ## __오답__
-
+ 
 void bfs(vector<vector<int>>& maps,vector<vector<bool>>& visited, int x, int y, int& answer)
 {
     if(x == maps[0].size() && y == maps.size())
