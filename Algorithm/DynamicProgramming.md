@@ -38,7 +38,7 @@ __피보나치 수열의 시간 복잡도__
 
 * 빅오 표기법 : O(2^N)
 
-<img src="https://user-images.githubusercontent.com/80774412/202376379-af87a5d1-f965-4db9-a844-e2d2d2926212.png"title="피보나치수열_시간복잡도분석"></img>
+<img src="https://user-images.githubusercontent.com/80774412/202376379-af87a5d1-f965-4db9-a844-e2d2d2926212.png" title="피보나치수열_시간복잡도분석"></img>
 
 단순 재귀 함수로 피보나치 수열을 해결하면 지수 시간 복잡도를 가지게 됩니다.
 

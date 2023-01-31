@@ -1,8 +1,13 @@
-# 수식 최대화
+
+2023.01
+
+# __[프로그래머스 LV2] 수식 최대화__
 
 완전 탐색
 
-----
+---- 
+
+## __문제설명__
 
 <img src="https://user-images.githubusercontent.com/80774412/213696657-80cb6ccd-2792-4d12-8023-dd2586dca460.PNG"></img>
 
