@@ -67,7 +67,7 @@ using namespace std;
 vector<int> solution(int n, long long left, long long right) {
     vector<int> answer;
     
-    for(int i = left; i < right+1; i++)
+    for(long long i = left; i < right+1; i++)
     {
         int divisor = i / n;
         int mod = i % n;
@@ -79,7 +79,10 @@ vector<int> solution(int n, long long left, long long right) {
 }
 ```
 
-2차원 배열에서 행과 열을 비교한 후 더 큰 값에 배열이 0부터인 특성을 바탕으로 1을 더해주면 그 인덱스에 해당하는 칸의 값이 된다.
+2차원 배열에서 행과 열을 비교한 후 더 큰 값에 배열이 0부터인 특성을 바탕으로 1을 더해주면 그 인덱스에 해당하는 칸의 값이 됩니다.
 
+반복문안의 반복자의 값형식을 long long 이 아닌 int로 설정하면 시간 초과 오류가 발생합니다.
+
+left 값이 long long 범위에 있는 값일 수도 있기 때문에 주의해야합니다.
 
 

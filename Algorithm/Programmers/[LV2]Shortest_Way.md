@@ -1,4 +1,5 @@
 2023.01
+2023.02.03
 
 # __[프로그래머스 LV4] 가장짧은거리__
 
@@ -132,3 +133,81 @@ int solution(vector<vector<int>> maps)
 }
 ```
 
+
+## __22.02.03__
+
+두번째 복습 풀이
+
+```c#
+#include<vector>
+#include<queue>
+using namespace std;
+
+struct POS
+{
+    int x, y, dist;
+    
+    POS(int _x, int _y, int _dist){x = _x; y = _y; dist = _dist;}
+};
+
+int solution(vector<vector<int>> maps)
+{
+    int answer = -1;
+    
+    int x = maps[0].size();
+    int y = maps.size();
+    
+    // 우, 하, 좌, 상
+    vector<int> xDir = {1,0,-1,0};
+    vector<int> yDir = {0,1,0,-1};
+        
+    vector<vector<bool>> visited(y,vector<bool>(x));
+    queue<POS> q;
+    
+    q.push(POS(0,0,1));
+    visited[0][0] = true;
+    
+    while(!q.empty())
+    {
+        POS cur = q.front();
+        q.pop();
+        
+        int curX = cur.x;
+        int curY = cur.y;
+        
+        if(curX == x-1 && curY == y-1)
+            return cur.dist;
+        
+        for(int i = 0; i < 4; i ++) 
+        {
+            int newX = curX + xDir[i];
+            int newY = curY + yDir[i];
+
+            if(newX >= x|| newX < 0 || newY >= y || newY < 0)
+            {
+                continue;
+            }
+                
+            if(maps[newY][newX] == 0)
+            {
+                continue;
+            }
+                
+            if(visited[newY][newX])
+            {
+                continue;
+            }
+            
+            q.push(POS(newX, newY, cur.dist+1));
+            visited[newY][newX] = true;
+        }
+    }
+    return -1;
+}
+
+```
+두번째 풀이에서는 첫번째에서 이중벡터로 구현했던 거리에대한 정보를 구조체의 멤버로 넣었습니다.
+
+dist 벡터의 인덱스 위치에 거리값을 저장하지 않고 while문에서 검사 조건을 통과하여 큐에 추가되는 POS 값에 거리값을 증가시키며
+
+while문이 끝나기 전 모든 x, y의 값이 목적지의 인덱스와 같아지면 해당 POS 구조체의 dist값을 반환하도록 구현했습니다.

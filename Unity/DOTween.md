@@ -35,7 +35,38 @@ __DOTween__ 이란 유니티 오브젝트의 애니메이션, 속성값 변경 �
             .AppendCallback(()=> gameObject.SetActive(isActive));
     }
 ```
-퀘스트가 완료되었을때 보여지는 창이 활성화되고 비활성화 될때의 애니메이션을 두트윈을 사용해서 구성했습니다.
+퀘스트가 완료되었을때 보여지는 창이 활성화되고 비활성화 될때의 애니메이션을 두트윈을 사용해서 구성했습니다.<br><br>
+
+## __오류 수정__
+
+선언해둔 트윈을 사용하기 위해서 퀘스트창이 Open 되고 Close 되는 시점의 코드에서 만약 퀘스트창을 여는 시점이라면,
+
+```c#
+showSequence.Play();
+hideSequence.pause();
+```
+
+이런 형식으로 시퀀스를 제어해주는 함수를 사용했는데,
+
+첫번째 사용 이후부터 쿠세트창이 다시 열리거나 닫히지 않는 오류가 발생했습니다.
+
+이것은 퀘트창을 다시 사용할 때 시퀀스의 제어 함수를 Restart() 가 아닌 Play() 로 호출해서 생긴 오류였습니다.
+
+트윈을 한번 Play 하고 난 후에는 Restart로 처음부터 다시 실행시켜주거나
+
+Rewind() 함수로 처음으로 되돌려준 뒤에 Play로 다시 실행시켜야 합니다.
+
+__퀘스트창을 두번째로 open 실행한 시점__
+
+```c#
+showSequence.Restart();
+hideSequence.pause();
+```
+```c#
+showSequence.Rewind().Play();
+hideSequence.pause();
+```
+<br><br>
 
 ## __floatTweener 구성__
 
