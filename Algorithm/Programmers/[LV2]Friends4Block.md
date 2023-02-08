@@ -19,7 +19,7 @@
 
 <br><br>
 
-## __나의 풀이__(오답)
+## __나의 풀이__(힌트 정답)
 
 ```c++
 #include <string>
@@ -42,7 +42,7 @@ struct Block
     Block(int _x, int _y){x = _x; y = _y;}
 };
 
-bool CheckBlock(int m, int n, vector<string> board)
+bool CheckBlock(int m, int n, vector<string>& board)
 {
     char curType = board[m][n];
     
@@ -53,18 +53,14 @@ bool CheckBlock(int m, int n, vector<string> board)
         
         if(checkX < 0 || checkY < 0 || checkX >= N || checkY >= M)
         {
-            //cout << "범위 벗어남" << endl;
             return false;
         }
-            
         
         if(board[checkY][checkX] != curType)
         {
-            //cout << "같은 형식 아님" << endl;
             return false;
         }
     }
-    //cout << "체크 완료" << endl;
     return true;
 }
 
@@ -75,7 +71,6 @@ int DeleteBlock(vector<Block> deleteBlocks, vector<string>& board)
     {
         int x = deleteBlocks[i].x;
         int y = deleteBlocks[i].y;
-        
         if(board[y][x] != '.')
         {
             board[y][x] = '.';
@@ -84,8 +79,8 @@ int DeleteBlock(vector<Block> deleteBlocks, vector<string>& board)
         
         for(int j = 0; j < 3; j++)
         {
-            int nx = x + diagonalX[i];
-            int ny = y + diagonalY[i];
+            int nx = x + diagonalX[j];
+            int ny = y + diagonalY[j];
             if(board[ny][nx] != '.')
             {
                 board[ny][nx] = '.';
@@ -105,7 +100,7 @@ void SortBlock(vector<string>& board)
             if(board[i][j] == '.')continue;
             
             int ny = i+1;
-            while(ny < M && board[ny][j] == '.')ny++;
+            while(ny < M && board[ny][j] == '.'){ny++; }
             ny--;
             if(ny != i)
             {
@@ -118,12 +113,14 @@ void SortBlock(vector<string>& board)
 
 int solution(int m, int n, vector<string> board) {
     int answer = 0;
+    vector<string> boardData = board;
     
     M = board.size();
     N = board[0].size();
     
     bool doneMatch = false;
     
+    // 더 이상 매치될 블록이 없을 때까지 반복합니다.
     while(!doneMatch)
     {
         doneMatch = true;
@@ -132,27 +129,26 @@ int solution(int m, int n, vector<string> board) {
         {
             for(int j = 0; j < n; j++)
             {
+                
                 // 주변 3개의 블록과 같은 유형인지 검사합니다.
-                if(CheckBlock(i,j,board))
+                if(CheckBlock(i,j,boardData))
                 {
-                    // 콤보로 매치되는 상태에서 빈 블럭들의 검색을 제외합니다.
-                    if(board[i][j] == '.')continue;
-                    matchBlock.push_back(Block(i, j));
+                    // 같은 블럭이 두개의 매치에 중복될 수 있기때문에, 중복 검사를해서 벡터에 추가해줍니다.
+                    if(boardData[i][j] == '.')continue;
+                    matchBlock.push_back(Block(j, i));
                     doneMatch = false;
                 }
             }
         }
-        
         if(!doneMatch)
         {
-            // 삭제할 블록들의 개수를 구해서 답에 더해줍니다.
-            answer = answer + DeleteBlock(matchBlock, board);
-            // 삭제된 칸과 위에 남아있는 블록칸을 바꿔서 정렬해줍니다.
-            SortBlock(board);
+            // 매치된 블록의 정보를 가지고 블록의 문자를 '.'으로 변경해주고, 변경한 횟수를 반환받습니다.
+            answer = answer + DeleteBlock(matchBlock, boardData);
+            // '.'으로 반환된 블럭을 문자열을 가진 블록 위로 정렬합니다.
+            SortBlock(boardData);
         }
     }
     return answer;
 }
 ```
-
 <br><Br>
