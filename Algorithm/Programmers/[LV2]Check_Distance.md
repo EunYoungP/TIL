@@ -2,8 +2,9 @@
 
 # __[프로그래머스 LV2] 거리두기 확인하기__
 
-
 2021 kakao 채용연계형 인턴십
+
+bfs / dfss
 
 ---- 
 
@@ -75,8 +76,7 @@ bool CheckPInManhattanDis(int x, int y, vector<string> room, bool& isDiagonal)
         char checkAround = room[ny][nx];
         if(checkAround == 'P')
         {
-            isDiagonal = true;
-            return CheckDistance(x, y, room, isDiagonal)
+            return CheckDistance(x, y, room, isDiagonal, DisType.diagonal);
         }
     }
     
@@ -89,7 +89,9 @@ bool CheckPInManhattanDis(int x, int y, vector<string> room, bool& isDiagonal)
         char checkAround = room[ny][nx];
         
         if(checkAround == 'P')
+        {
             return true;
+        }
         
         int nnx = x + (offsetX[i]*2);
         int nny = y + (offsetY[i]*2);
@@ -97,7 +99,9 @@ bool CheckPInManhattanDis(int x, int y, vector<string> room, bool& isDiagonal)
         char checkAroundDouble = room[nny][nnx];
         
         if(checkAroundDouble == 'P')
+        {
             return true;
+        }
     }
     return false;
 }
@@ -124,8 +128,88 @@ vector<int> solution(vector<vector<string>> places) {
     }
     return answer;
 }
-
 ```
+bfs / dfs 를 사용하지 않고 조건문으로만 풀려고 하다보니 코드가 너무 길어져 앞서 말한 방법으로 구현했습니다.
+<br><br>
+
+## __dfs 재풀이__(오답)
+```c++
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+struct Place
+{
+    int x, y;
+    Place(int _x, int _y){x = _x; y = _y;}
+};
+
+// 우하, 좌하, 좌상, 우상
+int diagonalX[] = {1,-1,-1,1};
+int diagonalY[] = {1,1,-1,-1};
+
+// 상 우 하 좌
+int offsetX[] = {0, 1, 0, -1};
+int offsetY[] = {-1, 0, 1, 0};
+
+bool dfs(vector<string> room, vector<vector<bool>>& visited, int x, int y, int depth)
+{
+    
+    if(depth >= 2)
+        return true;
+    cout << " " << y << " " << x << endl;
+    visited[y][x] = true;
+    for(int i = 0; i < 4; i++)
+    {
+        int nx = x + offsetX[i];
+        int ny = y + offsetY[i];
+        
+        if(nx < 0 || ny < 0 || nx >= 5 || ny >= 5)
+            continue;
+        if(visited[ny][nx] == true)
+            continue;
+        
+        if(room[ny][nx] == 'P')
+            return false;
+        
+        
+        dfs(room, visited, nx, ny, depth+1);
+    }
+    return true;
+}
+    
+vector<int> solution(vector<vector<string>> places) {
+    // 각 대기실의 거리두기 실천여부
+    vector<int> answer(5, 1);
+    vector<vector<bool>> visited(5,vector<bool>(5));
+    
+    for(int i = 0; i < 5; i++)
+    {
+        vector<string> curRoom = places[i];
+        for(int j = 0; j < 5; j++)
+        {
+            for(int n = 0; n < 5; n++)
+            {
+                if(curRoom[j][n] == 'P')
+                {
+                    visited[j][n] = true;
+                    if(!dfs(curRoom, visited, n, j, 0))
+                    {
+                       answer[i] = 0; 
+                    }
+                       
+                }
+            }
+        }
+    }
+    return answer;
+}
+```
+구현하긴 했는데 dfs 함수에서 'P'를 만났을때 false를 리턴해주는 부분의 조건이 한번도 실행되지 않았습니다.
+
+
 
 -------
 # __[프로그래머스 LV2] 주식 가격__
