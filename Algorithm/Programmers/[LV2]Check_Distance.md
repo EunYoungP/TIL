@@ -207,9 +207,105 @@ vector<int> solution(vector<vector<string>> places) {
     return answer;
 }
 ```
-구현하긴 했는데 dfs 함수에서 'P'를 만났을때 false를 리턴해주는 부분의 조건이 한번도 실행되지 않았습니다.
+구현했으나 dfs 함수에서 'P'를 만났을때 false를 리턴해주는 부분의 조건이 한번도 실행되지 않았습니다.
 
+-> 값출력으로 디버깅을 해보니 visited 가 첫번째 방을 탐색한 후 그대로 두번째 방 탐색시 초기화되지 않고 값이 유지되어 제대로 탐색되지 않았습니다.
 
+    방을 처음 탐색하는 시점에서 visited의 값을 초기화해줘 오류를 해결했습니다.
+    
+<br><br>
+
+## __오류 수정__
+
+```c++
+#include <string>
+#include <vector>
+#include <iostream>
+#include <cstring>
+
+using namespace std;
+
+struct Place
+{
+    int x, y;
+    Place(int _x, int _y){x = _x; y = _y;}
+};
+
+// 우하, 좌하, 좌상, 우상
+int diagonalX[] = {1,-1,-1,1};
+int diagonalY[] = {1,1,-1,-1};
+
+// 상 우 하 좌
+int offsetX[] = {0, 1, 0, -1};
+int offsetY[] = {-1, 0, 1, 0};
+
+bool dfs(vector<string> room, bool visited[5][5], int x, int y, int depth)
+{
+    if(depth > 2)
+        return true;
+    
+    visited[y][x] = true;
+    for(int i = 0; i < 4; i++)
+    {
+        int nx = x + offsetX[i];
+        int ny = y + offsetY[i];
+        
+        if(nx < 0 || ny < 0 || nx >= 5 || ny >= 5)
+        {
+            continue;
+        }
+            
+        if(visited[ny][nx] == true)
+        {
+            continue;
+        }
+        
+        // 대각선의 P가 파티션으로 막혀있는 경우 조건 추가
+        if(room[ny][nx] == 'P')
+        {
+            CheckPartition(x, y, nx, ny, room);
+            return false;
+        }
+            
+        
+        dfs(room, visited, nx, ny, depth+1);
+    }
+    return true;
+}
+    
+vector<int> solution(vector<vector<string>> places) {
+    // 각 대기실의 거리두기 실천여부
+    vector<int> answer(5, 1);
+    bool visited[5][5];
+    
+    for(int i = 0; i < 5; i++)
+    {
+        memset(visited, 0, sizeof(visited));
+        vector<string> curRoom = places[i];
+        for(int j = 0; j < 5; j++)
+        {
+            for(int n = 0; n < 5; n++)
+            {
+                if(curRoom[j][n] == 'P')
+                {
+                    visited[j][n] = true;
+                    if(!dfs(curRoom, visited, n, j, 0))
+                    {
+                        answer[i] = 0; 
+                    }
+                       
+                }
+            }
+        }
+    }
+    return answer;
+}
+```
+이제 2 거리안에 있는 'p'값의 탐색은 잘 실행되지만,
+
+파티션을 파악하여 거리두기가 되는 P인지 검색하는 부분을 추가해야합니다.
+
+<br><br><br>
 
 -------
 # __[프로그래머스 LV2] 주식 가격__
