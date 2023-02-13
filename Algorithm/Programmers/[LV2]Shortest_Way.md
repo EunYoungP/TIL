@@ -1,5 +1,6 @@
 2023.01
 2023.02.03
+2023.02.13
 
 # __[프로그래머스 LV4] 가장짧은거리__
 
@@ -211,3 +212,79 @@ int solution(vector<vector<int>> maps)
 dist 벡터의 인덱스 위치에 거리값을 저장하지 않고 while문에서 검사 조건을 통과하여 큐에 추가되는 POS 값에 거리값을 증가시키며
 
 while문이 끝나기 전 모든 x, y의 값이 목적지의 인덱스와 같아지면 해당 POS 구조체의 dist값을 반환하도록 구현했습니다.
+
+
+## __22.02.13__
+
+```c++
+#include<vector>
+#include<iostream>
+using namespace std;
+
+int offsetX[] = {1,0,-1,0};
+int offsetY[] = {0,1,0,-1};
+
+// struct POS
+// {
+//     int x, y, dist;
+//     POS(int _x, int _y, int _dist){x = _x; y = _y; dist = _dist;}
+// };
+
+void DFS(vector<vector<int>> maps, vector<vector<int>>& distmap, vector<vector<bool>>& visited, int x, int y, int index)
+{
+    if(visited[maps.size()-1][maps[0].size()-1] == true)
+    {
+        return;
+    }
+    
+    for(int i= 0; i < 4; i++)
+    {
+        int nx = x + offsetX[i];
+        int ny = y + offsetY[i];
+        
+        if(nx < 0 || nx >= maps[0].size() || ny < 0 || ny >= maps.size())
+            continue;
+        
+        if(visited[ny][nx] == true)
+            continue;
+        
+        if(maps[ny][nx] == 0)
+            continue;
+        
+        visited[ny][nx] = true;
+        distmap[ny][nx] = index+1;
+        DFS(maps, distmap, visited, nx, ny, index+1);
+    }
+    return;
+}
+
+int solution(vector<vector<int>> maps)
+{
+    int mapX = maps[0].size();
+    int mapY = maps.size();
+    
+    vector<vector<bool>> visited(mapY, vector<bool>(mapX));
+    vector<vector<int>> distmap(mapY, vector<int>(mapX));
+    
+    visited[0][0] = true;
+    distmap[0][0] = 1;
+    DFS(maps, distmap, visited, 0, 0, 1);
+    
+    if(visited[maps.size()-1][maps[0].size()-1] == true)
+        return distmap[maps.size()-1][maps[0].size()-1];
+    else 
+        return -1;
+}
+```
+
+처음으로 dfs를 사용하여 문제를 풀어봤습니다.
+
+대부분의 테스트케이스는 통과가되었는데 2개의 테스트가 통과되지 않았고
+
+효율성 테스트에서 모두 시간초과가 나왔습니다.
+
+dfs는 모든 노드를 탐색하여 거리값을 비교하고, bfs는 모든 값을 탐색하지 않고 인접노드 순서대로 탐색하여 목적지까지의 거리를 구하기때문에
+
+효율성에서 차이가 있었습니다.
+
+따라서 이런 최단 거리를 구하는 문제는 dfs를 이용하여 풀 수도 있지만, 효율성에서 문제가 있다면 bfs를 이용하여 풀이하는것이 효율적이라고 볼 수 있습니다.
