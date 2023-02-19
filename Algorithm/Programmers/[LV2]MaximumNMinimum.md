@@ -1,9 +1,12 @@
 
 2023.01.31
 
+[2023.02.19 재풀이]()
+
 # __[프로그래머스 LV2] 최댓값과 최솟값__
 
 std::string
+
 ---- 
 
 ## __문제__
@@ -149,4 +152,44 @@ getline 을 사용해서 구분자로 string 객체에 값을 분리하여 넣�
         cout << token << endl;
     }
     ```
+<br><br>
 
+## __재풀이__
+
+```c++
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+string solution(string s) {
+    string answer = "";
+    vector<int> v;
+    
+    string seperator = " ";
+    int curIndex = 0;
+    int findIndex = 0;
+    while((findIndex = s.find(seperator, curIndex)) != std::string::npos)
+    {
+        int len = findIndex - curIndex;
+        int seperateStr = stoi(s.substr(curIndex, len));
+        v.push_back(seperateStr);
+        curIndex = findIndex + 1;
+    }
+    v.push_back(stoi(s.substr(curIndex)));
+    
+    sort(v.begin(),v.end());
+    
+    answer += to_string(v[0]);
+    answer += " ";
+    answer += to_string(v[v.size()-1]);
+    
+    return answer;
+}
+```
+string find 함수,
+
+string substr 함수를 이용하여 문자열을 분리하고 연결해 
+
+최대값, 최소값을 구했습니다.
