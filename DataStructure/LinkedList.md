@@ -132,6 +132,40 @@ public:
 		}
 	}
 };
+
+// 스택의 값을 top -> bottom 순으로 나열해서 출력하는 기능입니다.
+// iostream 의 클래스 stream 의 연산자 << 오버라이딩 
+template<typename T>
+ostream& operator <<(ostream& out, LinkedList<T>& linkedList)
+{
+    ListNode<T>* temp = linkedList.head;
+    out << "[";
+    for (int i = 0; i < linkedList.size; i++)
+    {
+        out << temp->value;
+        temp = temp->next;
+        if (i < linkedList.size - 1)out << ", ";
+    }
+    out << "]";
+    return out;
+}
+
+int main()
+{
+    LinkedList<int> S;
+    S.insert(0); cout << S << endl;
+    S.insert(1); cout << S << endl;
+    S.insert(2); cout << S << endl;
+    S.insert(3); cout << S << endl;
+    S.erase(); cout << S << endl;
+    S.insert(4); cout << S << endl;
+    S.erase(); cout << S << endl;
+    S.erase(); cout << S << endl;
+    S.insert(5); cout << S << endl;
+    S.erase(); cout << S << endl;
+    S.erase(); cout << S << endl;
+    S.erase(); cout << S << endl;
+}
 ```
 
 
