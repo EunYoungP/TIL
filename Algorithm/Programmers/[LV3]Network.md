@@ -1,9 +1,12 @@
-2022.01
+[2022.01](#나의-풀이)
 
-프로그래머스 > 코딩테스트 고득점 Kit > 깊이/너비 우선 탐색(DFS/BFS)
+[2023.02.28]
 
 # 네트워크
 
+프로그래머스 > 코딩테스트 고득점 Kit > 깊이/너비 우선 탐색(DFS/BFS)
+
+----
 
 ## 문제설명
 
@@ -81,3 +84,50 @@ int solution(int n, vector<vector<int>> computers) {
 
     방문하지 않은 노드를 시작 노드로 하여 또다른 네트워크 연결망 탐색을 시작합니다.<br><Br>
 
+
+## __복습 풀이__
+
+```c++
+#include <string>
+#include <vector>
+#include <iostream>
+
+using namespace std;
+
+void DFS(vector<vector<int>> computers,vector<bool>& visited, int i)
+{
+    int connectSize = computers[0].size();
+    visited[i] = true;
+    
+    for(int k= 0; k < connectSize; k++)
+    {
+        if(computers[i][k] == 1 && visited[k] == false)
+            DFS(computers, visited, k);
+    }
+}
+
+int solution(int n, vector<vector<int>> computers) {
+    int answer = 0;
+    int comSize = computers.size();
+    
+    vector<bool> visited(comSize);
+    
+    for(int i =0; i < comSize; i++)
+    {
+        if(!visited[i])
+        {
+            DFS(computers, visited, i);
+            answer++;
+        }
+    }
+    return answer;
+}
+```
+
+시작 노드에서부터 연결되어있는 모든 노드를 탐색해서 방문기록을 남깁니다.
+
+이렇게 하나의 네트워크에 담겨있는 컴퓨터를 방문처리 검색할 때마다 네트워크 수를 증가시켜주고
+
+그 후 반복문으로 검색되지 않은 컴퓨터를 검색하여 연결된 네트워크를 검색합니다.
+
+최대 O(N)의 시간 복잡도로 문제를 해결할 수 있습니다.

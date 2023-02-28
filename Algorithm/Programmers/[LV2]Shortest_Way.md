@@ -137,7 +137,7 @@ int solution(vector<vector<int>> maps)
 
 ## __22.02.03__
 
-두번째 복습 풀이
+두번째 복습
 
 ```c#
 #include<vector>
@@ -216,6 +216,8 @@ while문이 끝나기 전 모든 x, y의 값이 목적지의 인덱스와 같아
 
 ## __22.02.13__
 
+세 번째 복습
+
 ```c++
 #include<vector>
 #include<iostream>
@@ -287,4 +289,93 @@ dfs는 모든 노드를 탐색하여 거리값을 비교하고, bfs는 모든 �
 
 효율성에서 차이가 있었습니다.
 
-따라서 이런 최단 거리를 구하는 문제는 dfs를 이용하여 풀 수도 있지만, 효율성에서 문제가 있다면 bfs를 이용하여 풀이하는것이 효율적이라고 볼 수 있습니다.
+따라서 이런 최단 거리를 구하는 문제는 dfs를 이용하여 풀 수도 있지만, 효율성에서 문제가 있다면 bfs를 이용하여 풀이하는것이 효율적이라고 볼 수 있습니다.<br><Br>
+
+## __22.02.28__
+
+네 번째 복습
+
+```c++
+#include<vector>
+#include<queue>
+#include<iostream>
+using namespace std;
+
+// 검정 벽 못감
+// 맵 벗어난 곳 못감
+struct Block
+{
+    int x, y, dist;
+    
+    Block(int _x, int _y, int _dist){x = _x; y = _y; dist = _dist;}
+};
+
+int solution(vector<vector<int> > maps)
+{
+    int answer = -1;
+    
+    int mapX = maps[0].size();
+    int mapY = maps.size();
+    
+    // 상 하 좌 우
+    int offsetX[] = {0, 0, -1, 1};
+    int offsetY[] = {-1, 1, 0, 0};
+    
+    queue<Block> q;
+    vector<vector<bool>> visited(mapY,vector<bool>(mapX));
+    vector<vector<int>> dist(mapY,vector<int>(mapX));
+    
+    q.push(Block(0,0,1));
+    visited[0][0] = true;
+    dist[0][0] = 1;
+    
+    while(!q.empty())
+    {
+        Block curBlock = q.front();
+        int curX = curBlock.x;
+        int curY = curBlock.y;
+        q.pop();
+        
+        if(curX == mapX-1 && curY == mapY-1)
+            return curBlock.dist;
+        
+        for(int i = 0; i < 4; i++)
+        {
+            int newX = curX + offsetX[i];
+            int newY = curY + offsetY[i];
+            
+            // 1. 조건문: 인덱스가 범위를 벗어나는지 검사
+            if(newY < 0 || newX < 0 || newY >= mapY || newX >= mapX)
+                continue;
+            // 2. 방문했던 블럭인지 검사
+            if(visited[newY][newX] == true)
+                continue;
+            // 3. 막혀있는 블럭인지 검사
+            if(maps[newY][newX] == 0)
+                continue;
+            
+            q.push(Block(newX, newY, curBlock.dist+1));
+            visited[newY][newX] = true;
+            dist[newY][newX] = curBlock.dist + 1;
+        }
+    }
+    
+    if(visited[mapY-1][mapX-1] == true)
+    {
+        answer = dist[mapY-1][mapX-1];
+    }
+    return answer;
+}
+```
+
+풀이 과정 중 있던 실수 하나는,
+
+for 문 안에 해당 블럭을 큐에 넣어도 되는 블럭인지 검사하는 조건문들 이 세개 있습니다.
+
+조건문 세개 중 인덱스 검사하는 조건문을 가장 먼저 실행해주지 않으면,
+
+segmentation fault 오류가 발생합니다.
+
+잘못된 인덱스가 2, 3번 조건문에서 검사에 사용될 수 있기 떄문입니다.
+
+따라서 항상 인덱스 검사를 가장 먼저 실행 해줘야합니다.
