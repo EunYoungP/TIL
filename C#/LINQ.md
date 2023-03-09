@@ -116,3 +116,42 @@ var profiles = from profile in arrProfiles
                 where profile.Height < 180
                 select profile;
 ```
+위 예제에서 profiles 은 180 미만의 데이터만 갖고 있는 IEnumerable<Profile> 형식의 컬렉션이기 때문에 LINQ 를 사용할 수 있습니다.
+
+위 LINQ 결과를 이용한 평균을 구해보겠습니다.
+<BR><bR>
+
+__Average 메소드__
+```c#
+double Average = profiles.Average(profile => profile.Height);
+```
+위 두개의 코드를 한 문장으로 묶을 수도 있습니다.<BR><bR>
+
+```C#
+double Average = (from profile in arrProfiles
+                    where profile.Height < 180
+                    select profile).Average(profile => profile.Height);
+```
+<br><Br>
+
+
+프로필 중 키를 175 이상과 175 미만의 그룹으로 나누고,
+
+각 그룹에서 키가 가장 큰 사람, 가장 작은 사람의 수를 뽑는 코드를 작성해보겠습니다.
+
+```C#
+var profilesStat = from profile in arrProfiles
+                group profile by profile.Height < 175 into s
+                select new
+                {
+                    Group = s.Key == true ? "175미만" : "175이상",
+                    Max = s.Max(profile => profile.Height),
+                    Min = s.Min(profile => profile.Hieght),
+                    Average = s.Average(profile => profile.Height);
+                };
+```
+
+groupby 문에서 arrProfiles를 175 미만의 그룹 s와 아닌 그룹으로 나눕니다.
+
+그리고 select 문에서 두개의 그룹을 profilesStat 시퀀스로 반환합니다.
+
