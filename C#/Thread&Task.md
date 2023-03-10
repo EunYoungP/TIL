@@ -1,10 +1,37 @@
 23.03.09
 
-📗 __'이것이 C# 이다' 의 일부 내용을 정리한 문서입니다.__<BR><BR>
-
 # __스레드와 테스크 Thread & Task__
 
+📗 __'이것이 C# 이다' 의 일부 내용을 정리한 문서입니다.__<BR>
+
+## __목차__
+
+__Thread__
+
+- [Thread란?](#💡-thread-란)
+
+- [Thread 사용하기](#📌-thread-사용하기)
+
+- [Thread 장점](#📌__thread-의-장점__)
+
+- [Thread 단점](#📌-thread-의-단점)
+
+- [Thread 임의 종료법: Abort](#📌-스레드-임의-종료-방법-1-abort)
+
+- [Thread 임의 종룝법: Inturrupt](#📌-스레드-임의-종료-방법-2-인터럽트)
+
+- [Thread 상태변화](#📌-스레드의-상태변화)
+
+- [Thread 동기화](#📌-스레드-간의-동기화)
 <Br>
+
+__TASK__
+
+
+
+<br><Br>
+
+## 💡 __Thread 란?__
 
 운영체제는 여러가지 프로세스를 동시에 실행할 수 있게 해줍니다.
 
@@ -12,11 +39,7 @@
 
 운영체제가 여러 작업을 동시에 하는 것처럼 프로세스도 여러 작업을 할 수 있습니다.
 
-(e.g. 워드프로세스에서 글을 작성하는 동안 맞춤법 검사를 실행합니다.)
-<br><br>
-
-
-## 💡 __Thread 란?__
+(e.g. 워드프로세스에서 글을 작성하는 동안 맞춤법 검사를 실행합니다.)<br><Br>
 
 __프로세스__ 는 반드시 한 개 이상의 __스레드__ 로 구성됩니다.
 
@@ -27,7 +50,7 @@ __스레드__ 는 운영체제가 __CPU 시간을 할당하는 기본 단위__ �
 지금 부터 여러개의 스레드를 가지는 __멀티 스레드__ 구조의 프로그램을 알아야 합니다.
 <Br><Br>
 
-## 📌__Thread 의 장점__
+## 📌 __Thread 의 장점__
 
 1. __대화형 프로그램에서 응답성을 높일 수 있습니다 :__
 
@@ -52,7 +75,7 @@ __스레드__ 는 운영체제가 __CPU 시간을 할당하는 기본 단위__ �
 <BR><bR>
 
 
-## 📌__Thread 의 단점__
+## 📌 __Thread 의 단점__
 
 1. __까다로운 구현과정__
 
@@ -176,7 +199,7 @@ namesapce BasicThread
 인스턴스가 생성되고 t1 스레드가 시작된 후 메인 스레드와 t1 스레드의 for문이 함께 실행됩니다. 그리고 t1.Join 으로 t1 스레드의 흐름이 메인 스레드로 합류합니다.
 <BR><bR>
 
-## __스레드 임의 종료__
+## 📌 __스레드 임의 종료 방법 1: Abort__
 
 프로세스는 사용자가 작업 관리자 등으로 읨의로 죽일 수 있습니다.
 
@@ -225,6 +248,21 @@ Abort 의 사용은 아래이유 때문에 거의 사용되지 않습니다.
 
 <br><Br>
 
+## 📌 __스레드 임의 종료 방법 2: 인터럽트__
+
+스레드는 스스로 종료하는 것이 가장 좋지만 불가피하게 강제 종료시켜야 하는 경우
+
+Abort 보다 부드러운 방법인 Thread.Interrupt() 메소드가 존재합니다.
+
+스레드가 실행중인 상태(Running) 를 피해 WaitJoinSleep 상태일 경우 ThreadInterruptedException 예외를 던져 스레드를 중지시킵니다.
+
+WaitJoinSleep 상태가 아닐 경우 WaitJoinSleep 상태가 될 때까지 대기하다가 나중에 중단시키기 때문에 "절대 중단되면 안되는 작업" 을 하고있을 경우 보장 받을 수 있습니다.
+
+사용법은 Abort 메소드와 같습니다.
+
+<br><Br>
+
+
 ## 📌 __스레드의 상태변화__
 
 ### ___ThreadState 열거형___
@@ -242,9 +280,46 @@ Abort 의 사용은 아래이유 때문에 거의 사용되지 않습니다.
 ThreadState 열거형은 Flags 애트리뷰트를 가지고 있습니다.
 
 __Flags__ 는 자신이 수식하는 열거형을 [비트 필드](#비트-필드-bit-field)(플래그 집합) 으로 처리할 수 있음을 나타냅니다.
-
 <br><Br>
 
+## __ThreadState Flags__
+
+```c#
+enm MyEnum
+{
+    Apple,  //0
+    Banana, //1
+    Kiwi,   //2
+    Mango   //3
+};
+```
+||일반 열거형|Flags 애트리뷰트 사용 열거형|
+|---|---|---|
+|(MyEnum)0|Apple|Apple|
+|(MyEnum)1|Banana|Banana|
+|(MyEnum)2|Kiwi|Kiwi|
+|(MyEnum)3|Mango|Mango|
+|(MyEnum)4|4|Apple, Mango|
+|(MyEnum)5|5|Banana, Mango|
+
+위와 같이 Flag 애트리뷰트는 열거형의 요소들의 집합으로 구성되는 값들도 표현할 수 있습니다.
+
+스레드는 한 번에 두가지 이상의 상태를 가질 수 있습니다.
+
+(e.g. Suspended-WaitSleepJoin, Bakcground-Stopped)
+
+따라서 두 가지 이상의 상태를 표현하기 위해 Flags 애트리뷰트가 수식되어 있습니다.<br><Br>
+
+<img src="https://user-images.githubusercontent.com/80774412/224069707-ef01be46-8f7b-4216-b8e4-ac8407798541.png"></img>
+
+보통의 열거형처럼 1씩 증가하지 않고 2의 제곱으로 증가하는 이유는 비트 연산을 통해 어떤 상태에 있는지 쉽게 알아낼 수 있기 때문입니다.
+
+따라서 ThreadState 필드를 통해 상태 확인 시 반드시 비트 연산을 이용해야 합니다.
+
+    if(t1.ThreadState & ThreadState.Aborted == ThreadState.Aborted)
+        Console.WirteLine("스레드가 정지했습니다.");
+
+<Br><Br>
 
 ### ___Thread 상태 규칙___
 
@@ -254,7 +329,164 @@ Abort  -- x -->  Running
 
 Running -- x --> Unstarted
 
-Background 상태는 전이되는 것이 아닌, 그저 스레드가 어떤 상황에 처해 있는지에 관한 정보이기 때문에 위 이미지 전환 과정에 표기되어 있지 않습니다.
+Background 상태는 전이되는 것이 아닌, 그저 스레드가 어떤 상황에 처해 있는지에 관한 정보이기 때문에 위 이미지 전환 과정에 표기되어 있지 않습니다.<br><Br>
+
+
+## 📌 __스레드 간의 동기화__
+
+스레드는 여러 가지 자원을 공유합니다.(e.g. 파일 핸들, 네트워크 커넥션, 메모리에 선언한 변수)
+
+스레드는 다른 스레드가 사용 중인 자원을 멋대로 사용하는 기질을 가지고 있습니다.
+
+__동기화__ 란 __스레드들이 순서대로 자원을 사용하게 하는 것__ 을 의미합니다.
+
+즉 '자원을 한번에 하나의 스레드가 사용하도록 보장' 하는 것입니다.
+
+동기화 도구로는 __lock__ 키워드와 __Monitor__ 클래스가 있습니다.<br><Br>
+
+## ___lock 동기화___
+
+lock 키워드는 평범함 코드를 __크리티컬 섹션__ 으로 바꿔줍니다.
+
+* _크리티컬 섹션: 한번에 한 스레드만 사용할 수 있는 코드 영역_
+
+```c#
+class MyClass
+{
+    int count = 0;
+    
+    public void Increase()
+    {
+        count = count + 1;
+    }
+}
+
+class MainApp
+{
+    static void Main(string[] args)
+    {
+        MyClass myclass = new Myclass();
+
+        Thread t1 = new Thread(ThreadStart(myclass.Increase));
+        Thread t2 = new Thread(ThreadStart(myclass.Increase));
+        Thread t3 = new Thread(ThreadStart(myclass.Increase));
+
+        t1.Start();
+        t2.Start();
+        t3.Start();
+
+        t1.Join();
+        t3.Join();
+        t2.Join();
+    }
+}
+```
+위 코드의 결과는 3 일것 같지만, 사실은 실행할 떄마다 1, 2, 3 중 어떤 값이 나올지 모릅니다.
+
+count = count + 1 은 간단해 보이지만 내부적으로 여러 단계의 하위 연산으로 나뉘는 코드입니다.
+
+즉 t1 의 스레드가 시작되어 코드를 실행하는 도중 t2가 실행될 수도 있고 t3 도 마찬가지 입니다.
+
+이 문제를 해결하기 위해서 count = count + 1 코드가 실행중일 때 다른 스레드가 실행하지 못하도록 하는 크리티컬 섹션이 필요합니다.
+
+```c#
+int count = 0;
+pirvate readonly object thisLock = new Object();
+
+public void Increase()
+{
+    // lock 키워드와 중괄호로 감싸진 부분이 크리티컬 섹션이 됩니다.
+    // lock 블록이 끝나는 괄호를 만나기 전까지 다른 스레드는 절대 이 코드를 실행할 수 없습니다.
+    lock(thisLock)
+    {
+        count = count + 1;
+    }
+}
+```
+lcok 키워드의 매개변수는 public 이나 외부에서 접근할 수 있는 경우 사용하지 않는 것이 좋습니다.
+
+다른 스레드가 하나의 락 매개변수를 얻기 위해 대기해야 하는 상황이 일어날 수 있기 때문입니다.
+
+_e.g. this, Type 형식(typeof, GetType()), string 형식_<br><Br>
+
+## ___Monitor 동기화___
+
+__Monitor__ 클래스는 스레드 도기화에 사용하는 정적 메소드를 제공합니다.
+
+- __Monitor.Enter()__: 크리티컬 섹션을 만듭니다.
+
+- __Monitor.Exit()__: 크리티컬 섹션을 제거합니다.
+
+두 메소드는 lock 키워드와 같은 역할을 합니다.
+
+```c#
+int count = 0;
+pirvate readonly object thisLock = new Object();
+
+public void Increase()
+{
+    // 크리티컬 섹션 생성
+    Monitor.Enter(thisLock);
+    try
+    {
+        count = count + 1;
+    }
+    finally
+    {
+        // 크리티컬 섹션 해지
+        Monitor.Exit(thisLock);
+    }
+    Thread.Sleep(1);
+}
+```
+
+사실 lock 키워드는 이 두 메소드를 바탕으로 구현되어 있기 때문에,
+
+Exit 호출 위치 오류, 호출 부재로 인한 버그가 생길 가능성을 lock 사용으로 줄일 수 있습니다.<br><Br>
+
+
+## __저수준 동기화__
+
+- __Monitor.Wait()__
+- __Monitor.Pulse()__
+
+Enter-Exit 보다 Wait-Pulse 메소드가, lock 키워드를 사용했을 때 보다 더 섬세하게 멀티 스레드 간의 동기화를 가능하게 해줍니다.
+
+lock 블록 안에서 호출해야 합니다. 그렇지 않으면 SynchronizationLockException 예외가 던져집니다.<br><Br>
+
+### __사용 순서__
+
+최소 요구사항인 lock 블록이 필요합니다.
+
+<img src="https://user-images.githubusercontent.com/80774412/224244996-811504f6-3583-4f4a-b722-3fc0ef43de8e.png" title = "https://www.shekhali.com/c-monitor-class-in-multithreading-with-examples/"></img>
+
+이 과정에서는 __Waiting Queue__ 와 __Ready Queue__ 가 존재합니다.
+
+1. 스레드가 __lock__ 을 소유한 상태가 됩니다.
+
+2. __Wait()__ 메소드를 통해 스레드는 lock 을 해제 후 __WaitSleepJoin__ 상태로 진입합니다.
+
+3. __Waiting Queue__ 에 스레드가 입력됩니다.
+
+4. lock 을 넘겨받은 스레드2 가 작업을 수행이 끝나 __Pulse()__ 메소드를 호출합니다.
+
+5. Waiting Queue 의 첫 요소를 꺼내 __Ready Queue__ 에 입력합니다.
+
+6. Ready Queue 에 입력된 차례에 따라 lock을 얻어 __Running__ 상태에 들어갑니다.
+<Br><Br>
+
+Thread.Sleep 또한 WaitSeelpJoin 상태로 만들지만, Pulse() 메소드에 의해 꺠어날 수 없기 떄문에 Wait() 함수를 사용합니다.<br><Br>
+
+## __사용법__
+
+
+
+
+
+
+
+
+<br><Br>
 
 ----
 
