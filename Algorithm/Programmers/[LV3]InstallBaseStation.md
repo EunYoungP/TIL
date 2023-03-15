@@ -1,4 +1,6 @@
-2023.02.20
+[2023.02.20](#나의-풀이오답)
+
+[2023.03.15](#재풀이)
 
 # __[프로그래머스 LV2] 기지국 설치__
 
@@ -151,6 +153,86 @@ __설치해야할 기지국의 개수__ 는 조건에 따라 두가지로 나뉩
     설치해야할 기지국의 개수 = ( 연속된 아파트의 개수 / 전파가 닿는 아파트의 범위 ) + 1
 
 <br><br>
+
+
+## __재풀이__(오답)
+```c++
+#include <iostream>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+// 최소 설치 기지국 개수 구하기
+int solution(int n, vector<int> stations, int w)
+{
+    int answer = 0;
+
+    vector<bool> reached(stations.size());
+    
+    // 기본 설치 기지국 전파 닿는 아파트 검사
+    for(int i = 0; i < stations.size(); i++)
+    {
+        int curStationIndex = stations[i] - 1;
+
+        reached[curStationIndex] = true;
+        for(int j = 1; j <= w; j++)
+        {
+            int plusIndex = curStationIndex + j;
+            int minusIndex = curStationIndex - j;
+
+            if(plusIndex >= n) plusIndex = n-1;
+            if(minusIndex < 0) minusIndex = 0;
+
+            reached[plusIndex] = true;
+            reached[minusIndex] = true;
+        }
+    }
+    
+    for(int i = 0; i < n; i++)
+    {
+        if(reached[i] == false)
+        {
+            int index = i + w;
+            while(reached[index] == true)
+            {
+                index--;
+            }
+            answer++;
+            
+            // 기지국 전파 전달
+            reached[index] = true;
+            for(int j = 1; j <= w; j++)
+            {
+                int plusIndex = index + j;
+                int minusIndex = index - j;
+                
+                if(plusIndex >= n) plusIndex = n-1;
+                if(minusIndex < 0) minusIndex = 0;
+                
+                reached[plusIndex] = true;
+                reached[minusIndex] = true;
+            }
+        }
+    }
+
+    return answer;
+}
+```
+
+
+__결과__
+
+<img src="https://user-images.githubusercontent.com/80774412/225310841-b2d0facf-bb3f-48ed-8f91-8bbf6feff192.PNG"></img>
+
+효율성 테스트에서 모두 코어 덤프 오류가 나고 정확성 테스트도 모두 통과는 되지 않았습니다...
+
+아파트의 수인 N만큼 반복문으로 검사를 진행해서 시간 복잡도가 너무 커진 이유떄문인것 같습니다.
+
+[첫 풀이](#수정-답안) 때 처럼 기지국의 전파가 닿지 않는 범위를 계산해서,
+
+전파가 닿지않는 범위와 기지국 전파의 범위를 계산하여 설치할 기지국의 개수만을 구하는 방법이 시간 복잡도 면에서 유리할 것 같습니다.
+
+위 풀이에서는 모든 아파트를 검사하며 전파가 닿는 상태인지 검사했고 또한 그 분기 속에서 어떤 자리에 설치가 가능한지 검사하는 반복문이 또 들어갔기 때문에 만일 아파트 수가 최대인 20000개라면 최소 200000번의 검사를 진행해야 합니다.<BR><bR>
 
 ----
 
