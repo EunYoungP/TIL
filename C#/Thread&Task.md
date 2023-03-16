@@ -29,6 +29,8 @@ __TASK__
 
 
 
+[Thread Task 차이점](#thread-와-task-차이)
+
 <br><Br>
 
 ## 💡 __Thread 란?__
@@ -488,6 +490,133 @@ Thread.Sleep 또한 WaitSeelpJoin 상태로 만들지만, Pulse() 메소드에 �
 
 <br><Br>
 
+## __Thread 와 Task 차이__
+
+Thread 는 Task를 처리하는 가장 작은 단위입니다.
+
+Thread는 메모리 상의 Task를 유지시키면서 사용자가 요구하는 서비스를 수행합니다.
+
+비유하자면 __Thread__ 가 __일꾼__ 이라면 __Task__ 는 __일감__ 이고 __Process__ 는 __노동조합__ 입니다.
+
+아래 프로그램 동작을 설명하며 Thread와 Task를 알아보겠습니다.<bR><bR>
+
+___윈도우 운영체제 프로그램 동작 절차___
+
+1. 프로그램을 실행합니다.
+
+2. 프로그램이 프로시저로 변하고 메모리에 올라갑니다.
+
+3. Main Thread 에서 Message Queue를 생성합니다.
+
+4. CLR로부터 __Thread Pool__ 을 할당받습니다.
+<br><Br>
+
+중요한 것은 4번 과정인데, 프로세스 당 하나의 __Thread Pool__ 이 존재합니다.
+
+- __차이점 1. Background Thread__
+
+    즉 Thread를 사용하기 위해 Thread 객체를 만들어 사용하지 않아도 Thread Pool에 있는 Thread를 가져오는 방법으로 스레딩을 할 수 있습니다.
+
+    이 방법이 바로 __Task-async-await__ 를 사용하는 __TAP__ 방법입니다.
+
+    Task를 통해 Thread Pool 에서 Thread를 호출하는 것은 기본적으로 Background Thread들이기 때문에 
+
+    프로그램이 죽게되면 Thread가 모두 죽습니다.
+
+    따라서 다음에 프로그램을 다시 실행할 때 문제없이 실행된다는것을 의미합니다. [좀비 프로세스](#좀비zombiedefunct-프로세스) 가 생기지 않습니다.<Br><Br>
+
+- __차이점 2. Thread 객체 할당 비용__
+
+    물론 Thread 객체를 생성하여 호출해도 IsBackground 속성을 true로 만들면 Background로 동작하지만, Task 로 Thread를 호출하면 작업이 완료되었을 때 다시 Thread Pool에 Thread를 반환한다는 차이점이 있습니다.
+
+    즉 Thread 객체를 만들어 사용하면 Abort시켜 재할당해서 사용해야 하기 때문에 할당 시스템 자원이 들어갑니다.
+
+    하지만 Task로 Thread Pool에있는 Thread를 가져다 쓰면 작업이 완료되면 다시 반환하기 때문에 자원이 들어가지 않습니다.<br><Br>
+
+    주의할 점은 ThreadPool 의 기본 크기보다 더 많은 Thread를 동시에 사용하는 경우입니다.
+
+    이런 경우 Thread Pool이 Thread를 자동 생성하여 오버헤드가 발생하여 Thread 객체를 생성하여 사용할 때보다 느려지게 됩니다.
+<BR><bR>
+
+
+[참고 자료 1](https://talkingaboutme.tistory.com/entry/Study-Task-Thread)
+
+[참고 자료 2](https://christian289.github.io/dotnet/Using-Thread-or-Using-Task/)
+
+<br><Br>
+
+## __비동기성, 동기성__
+
+- __비동기성__
+
+    해야할 일을 위임하고 대기하는 방식입니다.
+
+    e.g. 팀장이 팀원들에게 일을 배분하고 보고만 받습니다.
+
+- __동기성__
+
+    순차적으로 일을 끝내 나가는 방식입니다.
+
+    e.g. 팀장이 팀원 한사람씩 일을 마칠때까지 지켜보며 기다립니다.
+<Br><Br>
+
+## __병렬성, 동시성__
+
+<img src="https://user-images.githubusercontent.com/80774412/225408422-0b7df63f-5b44-4160-a99d-3af5116d9ceb.png"></img>
+
+- __병렬성__
+
+    2개 이상의 코어에서 동시에 여러 작업을 처리하는 것입니다.
+
+    멀티 코어에서 멀티 스레드를 동작시키는 방식을 의미합니다.
+
+- __동시성__
+
+    1개의 코어에서 여러 작업을 빠르게 교차하여 동시에 진행되는 것처럼 보이게 하는 것입니다.
+
+    싱글 코어에서 멀티 스레드를 동작시키기 위한 방식을 의미합니다.
+
+
+[참고 자료 1](https://velog.io/@brown_eyed87/220929%EB%B3%91%EB%A0%AC%EC%84%B1%EB%8F%99%EC%8B%9C%EC%84%B1-%EB%B9%84%EB%8F%99%EA%B8%B0%EB%8F%99%EA%B8%B0)
+
+<br><Br>
+
+## __병렬성과 동기성의 비교__
+
+<img src="https://user-images.githubusercontent.com/80774412/225434544-aebed0d0-677b-480d-b7a7-580cbf682d8c.png"></img>
+
+둘 다 멀티태스킹 느낌이지만
+
+__병렬성__ 은 쓰레드나 프로세스가 2개 이상의 작업을 동시에 진행하는 것이고,
+
+__비동기성__ 은 이전 작업의 결과를 기다리지 않고 실행되는 것 뿐입니다.
+
+
+
+## __쓰레드의 종류__
+
+___1. 물리적인 쓰레드___
+
+<img src="https://user-images.githubusercontent.com/80774412/225432123-c4400bbc-d69c-4dc3-a009-f1fcc2d4e04a.png"></img>
+
+물리적인 코어를 논리적으로 쪼갠 논리적 코어입니다.
+
+코어가 2개 뿐이라면, CPU가 컴퓨터를 속여 코어가 4개인 것처럼 작업을 진행하는 형식입니다.
+
+병렬처리도 4개까지 가능합니다.<BR><bR>
+
+___2. 논리적인 쓰레드___
+
+<img src="https://user-images.githubusercontent.com/80774412/225432597-95bf6c0c-9f19-4540-a43e-c60c0526e3df.png"></img>
+
+프로세스 내부에서 실행되는 세부적인 단위입니다.
+
+논리적인 쓰레드는 프로그램에서 생성할 수 있는 쓰레드입니다.<bR><bR>
+
+병렬로 실행될 수 있는 개수는 __(코어 개수) X (물리적 스레드 개수)__
+
+나머지 스레드는 빠르게 교차되어 실행되거나 유휴상태로 남아있습니다.<BR><bR>
+
 ----
 
 ## ___관련 지식___<br><Br>
@@ -498,5 +627,14 @@ C언어 개발 초기 1 바이트로 0~255 까지 표현할 수 있는데 기껏
 
 C# 이 개발된 메모리가 풍부해진 시기에는 사용할 필요가 없었지만, C 개발자들이 .NET 프레임워크에 사용할 수 있도록 Flags 애트리뷰트를 선언해 뒀습니다.
 [원문](#threadstate-열거형)<Br><Br>
+
+#### ___좀비(Zombie/Defunct) 프로세스___
+
+프로세스가 종료되고 리소스는 모두 회수되었지만
+
+시스템 프로세스 테이블에 남아있는 defunct 상태의 프로세스를 __좀비 프로세스__ 라고 합니다. 
+
+쉽게 말하면 __실행이 종료되었지만 아직 삭제되지 않은 프로세스__ 를 의미합니다.
+[원문](#thread-와-task-차이)<BR><bR>
 
 
