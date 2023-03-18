@@ -1,5 +1,7 @@
 2023.03.03
 
+2023.03.18
+
 # __[프로그래머스 LV3] N으로 표현__
 
 DP
@@ -97,5 +99,71 @@ DP[K]의 경우의 수를 메모해 두고 사용해야겠다는 생각을 했�
 
 - 그리고 N을 K번 있는 그대로 조합한 경우(e.g. N, NN, NNN, NNNN 등) 로 나눌 수 있습니다.
 
-이 예시에서 볼 수 있듯 K번 조합되는 경우의 수는 DP[i] 와 DP[K-i]을 조합하여 나올 수 있는 경우의 수라고 할 수 있습니다.
+이 예시에서 볼 수 있듯 K번 조합되는 경우의 수는 DP[i] 와 DP[K-i]을 조합하여 나올 수 있는 경우의 수라고 할 수 있습니다.<Br><Br>
 
+
+## __재풀이_
+```c++
+#include <string>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+int MakeSelfRepeat(int N, int count)
+{
+    int temp;
+    for(int i = 0; i < count; i++)
+    {
+        temp += N * pow(10, count);
+    }
+    return temp;
+}
+
+int solution(int N, int number) {
+    int answer = -1;
+    vector<vector<int>> n;
+    
+    n[0].push_back(0);
+    n[1].push_back(N);
+    
+    if(N == number)
+        return 1;
+    
+    //5, 55 /6, 66/7, 77, 777
+    for(int i = 2; i < 9; i++)
+    {
+        n[i].push_back(MakeSelfRepeat(N, i));
+        
+        for(int j = 1; j < i; j++)
+        {
+            for(auto a : n[j])
+            {
+                if(a == 0)continue;
+                for(auto b : n[i-j])
+                {
+                    if(b == 0)continue;
+                    n[i].push_back(a + b);
+                    n[i].push_back(a - b);
+                    n[i].push_back(a * b);
+                    n[i].push_back(a / b);
+                }
+            }
+        }
+        
+        for(int k = 0; k < n[i].size(); k++)
+        {
+            if(n[i][k] == number)return i;
+        }
+    }
+    
+    
+    return answer;
+}
+```
+
+두 번째 풀이에서 DP 문제인 점을 바로 파악할 수 있었습니다.
+
+하지만 반복문이 너무 많이 사용되다 보니 
+
+이렇게 사용해도 되는지에 대한 고민에 빠져 답을 내기 어려웠습니다.

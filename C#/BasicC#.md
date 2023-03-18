@@ -11,17 +11,21 @@
 
 ## __new 한정자__
 
-new 키워드는 보통 객체를 생성하고 생성자를 호출해주는 기능으로 많이 사용합니다.
+ __선언 한정자__ 로 사용되는 new 키워드는 기본 클래스에서 __상속된 멤버를 숨깁니다.__ 즉, __다형성을 가지지 않습니다.__
 
-하지만 __선언 한정자__ 로 사용되는 new 키워드는 기본 클래스에서 __상속된 멤버를 숨깁니다.__
+같은 이름, 시그니처를 가진 부모 클래스의 멤버와 파생클래스의 멤버에 대해 
 
-즉, 상속을 사용한 이름 숨기기를 합니다. 따라서  파생 버전의 멤버로 기본 클래스 버전의 멤버를 대신하게 됩니다.
+파생클래스 멤버가 기본 클래스에서 상속된 멤버의 숨김을 인식한다고 __명시하는 역할을 합니다.__
 
-* 역할
+new 한정자를 쓰지 않아도 결과는 달라지지 않습니다. 가독성을 위한 명시적 역할이 큽니다.<br><Br>
+
+
+* 그 외 역할
 
     - 형식의 인스턴스를 만듭니다.
 
     - 제네릭 형식 제약 조건으로 만듭니다.
+<br><Br>
 
 ## __new 한정자 사용해야하는 경우__
 
@@ -35,7 +39,11 @@ new 키워드는 보통 객체를 생성하고 생성자를 호출해주는 기�
 
 2. new 키워드를 사용하여 이를 한정합니다.<br><Br>
 
-___예시 1___
+    _new 키워드는 public 앞이나 뒤에 모두 사용 가능합니다._
+
+<br>
+
+### __사용 예시 1__
 
 ```c#
 public class BaseC
@@ -51,15 +59,16 @@ public class DerivedC:BaseC
     new public void Invoke(){}
 }
 ```
-위 예제에서 BasC.Invoke 는 DerivedC.Invoke 에 의해 숨겨집니다!
+위 예제에서 BasC.Invoke 는 DerivedC.Invoke 에 의해 숨겨집니다!<br><Br>
 
-### __주의할 점__
+### __override와 new__
 
 override 와 new 를 한 멤버에 모두 사용하면 오류가 발생합니다. 두 한정자는 함께 사용할 수 없습니다.
 
 __new 한정자__ 는 동일한 이름의 새 멤버를 만들고 원래 멤버를 숨기는 반면,
 
 __override__ 한정자는 상속된 멤버에 대한 구현을 확장합니다.<br><Br>
+
 
 ### __new 한정자 사용법 예시1__
 
@@ -87,6 +96,8 @@ public class DrivedC:BaseC
     }
 }
 ```
+<Br>
+
 ### __new 한정자 사용법 예시2__
 
 _new 한정자를 사용하여 경고 메시지 제거하는 방법_
@@ -105,6 +116,7 @@ public class BaseC
 
 public class DerivedC:BaseC
 {
+    // new 한정자 사용 멤버
     new public class NestedC
     {
         public int x = 100;
@@ -130,6 +142,9 @@ public class DerivedC:BaseC
 }
 ```
 
+[참고 문서 1](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords)
+
+
 <bR><bR>
 
 ## __Closer 람다__
@@ -145,5 +160,9 @@ public class DerivedC:BaseC
 <BR><bR>
 
 ## __Interface, Struct 의 상속__
+
+<br><Br>
+
+## __.meta 파일__
 
 <br><Br>
