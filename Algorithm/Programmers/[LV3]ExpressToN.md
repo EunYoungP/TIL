@@ -1,6 +1,6 @@
-2023.03.03
+[2023.03.03](#나의-풀이참고)
 
-2023.03.18
+[2023.03.18 재풀이](#_재풀이)
 
 # __[프로그래머스 LV3] N으로 표현__
 
@@ -107,40 +107,42 @@ DP[K]의 경우의 수를 메모해 두고 사용해야겠다는 생각을 했�
 #include <string>
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 using namespace std;
 
 int MakeSelfRepeat(int N, int count)
 {
-    int temp;
+    int temp =0;
     for(int i = 0; i < count; i++)
     {
-        temp += N * pow(10, count);
+        temp += N * pow(10, i);
     }
+    cout <<temp<<endl;
     return temp;
 }
 
 int solution(int N, int number) {
     int answer = -1;
-    vector<vector<int>> n;
+    vector<vector<int>> n(9);
     
-    n[0].push_back(0);
+    //n[0].push_back(0);
     n[1].push_back(N);
     
     if(N == number)
         return 1;
     
     //5, 55 /6, 66/7, 77, 777
-    for(int i = 2; i < 9; i++)
+    for(int i = 2; i <= 8; i++)
     {
         n[i].push_back(MakeSelfRepeat(N, i));
         
         for(int j = 1; j < i; j++)
         {
-            for(auto a : n[j])
+            for(auto& a : n[j])
             {
                 if(a == 0)continue;
-                for(auto b : n[i-j])
+                for(auto& b : n[i-j])
                 {
                     if(b == 0)continue;
                     n[i].push_back(a + b);
@@ -156,8 +158,6 @@ int solution(int N, int number) {
             if(n[i][k] == number)return i;
         }
     }
-    
-    
     return answer;
 }
 ```
@@ -167,3 +167,5 @@ int solution(int N, int number) {
 하지만 반복문이 너무 많이 사용되다 보니 
 
 이렇게 사용해도 되는지에 대한 고민에 빠져 답을 내기 어려웠습니다.
+
+첫 번쨰 풀이에서는 배열 속 벡터 형식으로 DP리스트를 표현했지만 이번에는 이중 벡터로 표현했습니다.
