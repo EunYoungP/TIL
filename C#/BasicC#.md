@@ -167,7 +167,7 @@ class Car
     }
 }
 
-class InheritenceCar1: Car
+class InheritanceCar1: Car
 {
     // new 한정자 사용
     public new void ShowDetails()
@@ -176,7 +176,7 @@ class InheritenceCar1: Car
     }
 }
 
-class InheritenceCar2: Car
+class InheritanceCar2: Car
 {
     // override 한정자 사용: 오버라이딩
     public override void ShowDetails()
@@ -186,10 +186,10 @@ class InheritenceCar2: Car
 }
 ```
 
-위 예시에는 InheritenceCar1 과 InheritenceCar2 라는 Car 클래스를 상속받은 파생 클래스 두 개가 존재합니다.
+위 예시에는 InheritanceCar1 과 InheritanceCar2 라는 Car 클래스를 상속받은 파생 클래스 두 개가 존재합니다.
 ```c#
-    InheritenceCar1 car1 = new InheritenceCar1();
-    InheritenceCar2 car2 = new InheritenceCar2();
+    InheritanceCar1 car1 = new InheritanceCar1();
+    InheritanceCar2 car2 = new InheritanceCar2();
 
     car1.ShowDetails();
     car2.ShowDetails();
@@ -206,8 +206,8 @@ ShowDetails 메서드는 각각 new와 override로 파생클래스 안에서 재
 하지만 아래 예시에서는 다릅니다.
 
 ```c#
-    Car car1 = new InheritenceCar1();
-    Car car2 = new InheritenceCar2();
+    Car car1 = new InheritanceCar1();
+    Car car2 = new InheritanceCar2();
 
     car1.ShowDetails();
     car2.ShowDetails();
@@ -217,14 +217,15 @@ ShowDetails 메서드는 각각 new와 override로 파생클래스 안에서 재
     // 상속 2 ShowDetails
 ```
 
-기본 클래스 타입으로 생성된 파생 클래스의 인스턴스를 선언했습니다.
+기본 클래스 타입으로 생성된 파생 클래스의 인스턴스를 생성했습니다.
 
 따라서 부모 클래스에 있는 ShowDetail이 우선적으로 실행되는데,
 
-new 한정자로 선언한 이름이 같은 파생클래스의 메서드는 
+오버라이딩 되지 않은 InheritanceCar1의 메서드는 부모 메서드가 실행되고
+
+오버라이딩된 IngeritanceCar2 의 메서드는 파생 클래스의 메서드가 실행됩니다.
 
 <br><Br>
-
 
 [참고 문서 1](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords)
 
