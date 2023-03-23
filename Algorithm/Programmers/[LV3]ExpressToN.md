@@ -2,6 +2,8 @@
 
 [2023.03.18 재풀이](#_재풀이)
 
+[2023.03.23 재풀이](#재풀이2)
+
 # __[프로그래머스 LV3] N으로 표현__
 
 DP
@@ -168,4 +170,84 @@ int solution(int N, int number) {
 
 이렇게 사용해도 되는지에 대한 고민에 빠져 답을 내기 어려웠습니다.
 
-첫 번쨰 풀이에서는 배열 속 벡터 형식으로 DP리스트를 표현했지만 이번에는 이중 벡터로 표현했습니다.
+첫 번쨰 풀이에서는 배열 속 벡터 형식으로 DP리스트를 표현했지만 이번에는 이중 벡터로 표현했습니다.<br><Br>
+
+## __재풀이2__
+
+```c++
+#include <string>
+#include <vector>
+#include <cmath>
+
+using namespace std;
+
+int GetDuplication(int N, int count)
+{
+    int temp = 0;
+    for(int i = 0; i < count; i++)
+    {
+        temp += N * pow(10, i);
+    }
+    return temp;
+}
+
+int solution(int N, int number) {
+    int answer = -1;
+    vector<vector<int>> dp(9);
+    
+    dp[1].push_back(GetDuplication(N, 1));
+    
+    // for(auto& a : dp[1])
+    // {
+    //     if(a == number)
+    //         return 1;
+    // }
+    
+    for(int i= 0; i < dp[1].size(); i++)
+    {
+        if(dp[1][i] == number)
+            return 1;
+    }
+    
+    // i 개를 이용한 조합 = N-i 개의 조합 +/-/*// i 개의 조합
+    for(int i = 2; i <= 8; i++)
+    {
+        dp[i].push_back(GetDuplication(N, i));
+        
+        for(int j = 1; j < i; j++)
+        {
+            for(auto& a : dp[j])
+            {
+                if(a == 0)
+                    continue;
+                for(auto& b : dp[i-j])
+                {
+                    if(b==0)
+                        continue;
+                    
+                    dp[i].push_back(a * b);
+                    dp[i].push_back(a / b);
+                    dp[i].push_back(a + b);
+                    dp[i].push_back(a - b);
+                }
+            }
+        }
+        // for(auto& u : dp[i])
+        // {
+        //     if(u == number)
+        //         return i;
+        // }
+        for(int l = 0; l < dp[i].size(); l++)
+        {
+            if(dp[i][l] == number)return i;
+        }
+    }
+    return answer;
+}
+```
+
+같은 N 숫자가 겹치는 경우의 수를 구하는 함수를 따로 구현하는 것은 쉽게 할 수 있었습니다.
+
+첫 번째, 두 번째 풀이와 달랐던 부분은 주석처리 된 범위기반 반복문을 사용해서 이중벡터를 처리한 점입니다.
+
+주석 아래 반복문대신 주석 안의 내용을 사용해도 답은 같습니다.
