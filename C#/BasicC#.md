@@ -2,7 +2,6 @@
 
 # __C# 문법__
 
-<BR><bR>
 
 ## __목차__
 
@@ -18,6 +17,17 @@
 
     - [new 사용 예시 2](#new-한정자-사용법-예시1)
 <bR><bR>
+
+- [Closure](#closure)
+
+    - [Closure 개념](#closure-개념)
+
+    - [Closure는 어디에 사용하는가](#closure는-어디에-사용하는가)
+
+    - [Closure 구현](#closure의-구현)
+
+<br><Br>
+
 
 ## __new 한정자__
 
@@ -225,14 +235,13 @@ ShowDetails 메서드는 각각 new와 override로 파생클래스 안에서 재
 
 오버라이딩된 IngeritanceCar2 의 메서드는 파생 클래스의 메서드가 실행됩니다.
 
-<br><Br>
 
 [참고 문서 1](https://learn.microsoft.com/ko-kr/dotnet/csharp/programming-guide/classes-and-structs/knowing-when-to-use-override-and-new-keywords)
 
 
 <bR><bR>
 
-## __Closure 람다__
+## __Closure__
 
 C# 2.0부터 지원된 기능으로 __무명메서드Anonymous Method__ 와 __람다식Lambda Expression__ 으로 구현 가능합니다.
 
@@ -245,6 +254,7 @@ C# 2.0부터 지원된 기능으로 __무명메서드Anonymous Method__ 와 __�
 ```c#
 class MyClass1
 {
+    // 익명메서드를 감싸고있는 메서드
     public void Test()
     {
         int key = 10;   // Outer 로컬변수
@@ -272,21 +282,100 @@ Outer 로컬변수를 스택에 두지 않고 힙에 두고, 별도의 Nested Cl
 ```c#
 Class MyClass1
 {
+    // Nested 클래스를 생성합니다.
     Class Nested
     {
+        // Outer 로컬변수를 필드에 저장합니다.
         public int key;
-        public void Test()
+        // 람다식을 메서드로 추가합니다.
+        public void print(string msg)
         {
-            Action<string> print = delegate(string msg)
-            {
-                string str = msg + key;
-            }
-
-            print("A");
+            string str = msg + key;
         }
+    }
+
+    // Outer 클래스에서 Nested 객체를 엑세스하고
+    // 메서드를 호출합니다.
+    public void Test()
+    {
+        Nested n = new Nested();
+
+        n.key = 10;
+        n.print(a);
     }
 }
 ```
+<Br><Br>
+
+### __Closure는 어디에 사용하는가?__
+
+기본적으로 Closure 는 [일급함수](#일급-함수)로서 전달할 수 있는 함수입니다.
+
+함수를 이리 저리 전달하여 사용할 때,
+
+그 함수가 처음 정의될 때의 데이터를 그대로 가지고 있을 필요가 있는 경우에 사용합니다.
+
+LINQ 쿼리에서 이런 기능이 많이 사용됩니다.
+
+```C#
+class Class1
+{
+    private List<string> lists = new List<string>()
+    {
+        "A","B","ABC"
+    };
+
+    public IList<string> GetList(int maxLength) // Outer 메서드의 입력 파라미터
+    {
+        var limitedList = lists.Where(q => q.Length <= maxLegnth).ToList();
+
+        return limitedList;
+    }
+}
+```
+
+maxLength는 Outer 메서드의 입력 파라미터로 Where 절 안의 람다식은 Closure가 되며,
+
+C# 컴파일러는 C# Closoure에 맞는 Nested Class를 생성합니다.<br><Br>
+
+## __Closure의 구현__
+
+```c#
+// Static 메서드 생성
+class MyClass1
+{
+    public void Run()
+    {
+        Action act = () => Console.WriteLine("a");
+    }
+}
+
+// Instance 메서드 생성
+class MyClass2
+{
+    int a = 1;
+    public void Run()
+    {
+        Action act = ()=>Console.WriteLine("A");
+    }
+}
+
+// Nested 클래스 생성(Closure)
+class MyClass3
+{
+    public void Run()
+    {
+        int a = 1;  // Outer 로컬 변수
+        Action act = () => Console.WriteLine("a");
+    }
+}
+```
+
+__MyClass1__ 처럼 람다식에 외부 변수/필드를 전혀 사용하지 않으면 C# 컴파일러는 람다식에 대하여 static 메서드를 생성합니다.
+
+__MyClass2__ 처럼 람다식에 객체 필드를 사용하는 경우 Instance 메서드를 생성합니다.
+
+__MyClass3__ 처럼 람다식에 Outer 메서드의 변수를 사용하는 경우 Nested 클래스를 만들고, Nested 클래스 안에 Free Vaiable 필드를 추가하고 람다식을 메서드로 추가합니다.
 
 <br><Br>
 
@@ -318,3 +407,10 @@ Class MyClass1
 
 i.e. 오버로딩의 조건 [원문](#new-한정자)
 <br><Br>
+
+### __일급 함수__
+
+함수를 일종의 데이터 타입처럼 취급할 수 있을 때,
+
+즉 함수를 다른 메서드의 파라미터로 전달하여 사용할 수 있을 때 이를 일급함수라고 합니다.[원문](#closure는-어디에-사용하는가)
+<Br><Br>
