@@ -232,7 +232,61 @@ ShowDetails 메서드는 각각 new와 override로 파생클래스 안에서 재
 
 <bR><bR>
 
-## __Closer 람다__
+## __Closure 람다__
+
+C# 2.0부터 지원된 기능으로 __무명메서드Anonymous Method__ 와 __람다식Lambda Expression__ 으로 구현 가능합니다.
+
+### __Closure 개념__
+
+무명메서드나 람다식이 그것을 정의하고 있는 메서드의 로컬변수를 사용하고 있을 때,
+
+그 무명메서드 혹은 람다식은 Closure라 부릅니다.
+
+```c#
+class MyClass1
+{
+    public void Test()
+    {
+        int key = 10;   // Outer 로컬변수
+        public Action<string> print = delegate(string msg)
+        {
+            string str = msg + key;
+        }
+        print("A");
+    }
+}
+```
+
+print 의 익명메소드 속에서 바깥쪽 함수의 변수(Outer 로컬변수)인 key를 사용합니다.
+
+이런 경우 key의 값은 Test함수를 실행하고 벗어나는 순간 사라집니다.
+
+key는 로컬변수로 그 메서드를 벗어나는 순간 스택에서 지워지기 때문입니다.
+
+따라서 C# 컴파일러는 Closure을 만들어 특별 처리를 해줍니다.
+
+Outer 로컬변수를 스택에 두지 않고 힙에 두고, 별도의 Nested Class를 생성하여 그 필드에 Outer 로컬 변수를 저장하고 람다식을 메서드에 저장합니다.
+
+아래 코드는 위 코드를 C# 컴파일러가 실행하여 Nested로 실행되는 개념적 모습입니다.
+
+```c#
+Class MyClass1
+{
+    Class Nested
+    {
+        public int key;
+        public void Test()
+        {
+            Action<string> print = delegate(string msg)
+            {
+                string str = msg + key;
+            }
+
+            print("A");
+        }
+    }
+}
+```
 
 <br><Br>
 
