@@ -451,10 +451,61 @@ __MyClass3__ 처럼 람다식에 Outer 메서드의 변수를 사용하는 경�
 [참고 문서](https://luv-n-interest.tistory.com/922)
 <br><Br>
 
-## __*.meta 파일__
+## 📌 __*.meta 파일__
 
+### __Unity Asset 내부 처리__
+
+모든 에셋파일에는 대응하는 meta파일이 존재합니다.
+
+저장되는 정보는 아래와 같습니다.
+
+- 유니티 내부적으로 Asset을 참조하는데 사용되는 ID값
+
+- Asset에 대한 import Settings 정보
+
+    Project View에서 Asset을 클릭하면 Inspector에 나타나는 정보입니다.
+
+    Asset의 종류에 따라 Import Settings도 다릅니다.
+
+__에셋 추가 프로세스__
+
+1. asset을 import 하거나 Asset 폴더에 새로운 파일을 생성하면
+
+    asset에 unique한 ID를 부여합니다.
+
+    이 ID는 unity 내부적으로 asset을 참조하는데 사용됩니다.
+
+    이후 폴더를 옮기거나 이름을 변경해도 ID를 통해 파일을 참조할 수 있습니다.
+
+2. *.meta 파일을 생성합니다.
+
+    *.meta 파일은 asset이 존재하는 폴더에 생성됩니다.
+
+    에셋 고유 ID는 *.meta 파일에 저장됩니다.
+
+    __유니티 내에서__ asset의 위치나 파일명이 변경되면 *.meta 파일의 위치와 이름도 변경됩니다.
+
+    하지만 __유니티 외부(윈도우)__ 에서 파일을 조작하면 수동으로 변경해 줘야 합니다.
 <br><Br>
 
+
+## 📌 __메타파일 누락을 조심해야 하는 경우__
+
+- GIT으로 협업할 경우
+
+    작업한 asset과 그 메타 파일도 함께 push 해야 합니다.
+
+    메타파일이 누락된 파일을 다른 사람이 pull하고 유니티를 시작하면,
+
+    각각의 asset마다 새로운 메타파일이 생성되고 다시 push하여 병합하려고 하면 오류가 발생합니다.
+
+- 유니티 외부(카톡)로 파일을 공유할 경우
+
+    이런 경우 UnityPackage형태로 파일을 공유하면 해결됩니다.
+
+    Unity Package에는 메타 파일 정보도 모두 포함 되기 떄문입니다.
+
+[참고 문서](https://coding-groot.tistory.com/5)
 
 ----
 
