@@ -6,7 +6,7 @@
 
 ## __문제__
 
-[프로그래머스_추석 트래픽](https://school.programmers.co.kr/learn/courses/30/lessons/49189)<br><Br>
+[프로그래머스_가장 먼 노드](https://school.programmers.co.kr/learn/courses/30/lessons/49189)<br><Br>
 
 ## __나의 풀이__()
 ```c++
@@ -88,6 +88,7 @@ int solution(int n, vector<vector<int>> edge) {
     
     return answer;
 }
+```
 
 처음 방법으로 BFS를 이용하여 모든 노드의 요소에서 1에 도달할 때까지의 거리를 구한 뒤 값을 저장했습니다.
 
