@@ -120,5 +120,125 @@ __시간 복잡도는 O(logN)__ 입니다.
 
 (e.g. 32, 16, 8, 4, 2, 1 순으로 진행됩니다.)
 
+검색이 진행될 때마다 선형탐색보다 비교할 수 없게 빨라집니다.
+
 
 [참고 자료]("https://velog.io/@kimdukbae/%EC%9D%B4%EB%B6%84-%ED%83%90%EC%83%89-%EC%9D%B4%EC%A7%84-%ED%83%90%EC%83%89-Binary-Search")
+
+<br><Br>
+
+## __이진 탐색을 이용한 풀이__ (풀이 참고)
+
+첫 풀이에서는 금과 은을 운반할 수 있는 가장 빠른 시간을 구하려고 했습니다.
+
+* => 1초 부터 시작하여 탐색을 하면 정답까지 모든 경우의 수를 탐색합니다.
+
+하지만 반대로 시간을 기준으로 모든 금과 은을 운반할 수 있는지 검사한다면 이분탐색을 적용하여 풀이할 수 있습니다.
+
+* => 시간을 정해놓고, 그 시간내에 금과 은을 모두 운반할 수 있는지 탐색합니다.
+
+<br><Br>
+
+이진 탐색은 시작인덱스와 끝인덱스에서 중간값을 구하여 탐색합니다.
+
+* 시작 인덱스인 가장 적은 운반 시간은 1초가 됩니다.
+
+* 끝 인덱스인 가장 많은 운반 시간을 계산해봅시다.
+
+    * 우선 각 트럭은 각 도시에 정차 되어있는 상태로 시작하기 때문에,
+    미리 한번 신도시에 금과 은을 운반했다고 가정한 상태에서 시작하기위한 계산을 해줍니다.
+
+    한번에 운반할 수 있는 무게의 금과 은을 옮겨야할 광물의 총 양에서 빼주고,
+    현재까지 걸린시간에 한번 운반하는데 걸린 시간을 더해줍니다.
+
+    이 다음부터는 운반하기 위한 시간을 왕복으로 계산합니다.
+
+    수식화하면 아래와 같습니다.
+    ```
+    필요한 광물의 전체 양(금+은)            = A
+    한번에 운반 가능한 양                  = B
+    한번 운반하는데 걸리는 시간             = C
+    
+    필요한 광물을 모두 옮기는데 필요한 시간  = 2C * ((A-B)/B) + C
+    ```
+
+    문제에서 제시된 조건을 이용하여 끝값이 될 운반시간에 최악의 경우를 위한 조건은
+    금과 은의 운반해야할 양의 최대값은 10^9,
+    한번에 운반할 수 있는 양의 최소값은 1,
+    한번 운반하는데 걸리는 시간의 최대값은 10^5
+    로 설정할 수 있습니다.
+
+    위의 수식에 대입해보면 끝값은
+    * (10^5 * 2) * (10^9-1)/1 + 10^5
+    * => 10^14 * 2 + 10^5가 됩니다. 
+    * => 10^14 * 3
+    * 1은 너무 미미한 수치이기 때문에 생략
+
+
+                
+### __코드 구현__
+
+```c++
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+bool BinarySearch(int a, int b, vector<int> g, vector<int> s, vector<int> w, vector<int> t, long long mid)
+{
+    long long totalGold = 0;
+    long long totalSilver = 0;
+    long long totalMineral = 0;
+    
+    for(int i = 0; i < g.size(); i++)
+    {
+        long long roundTime = t[i] * 2;
+        
+        // 운반 횟수 판정방법 1
+         long long moveCount = (mid - t[i]) / roundTime;
+         moveCount++;
+         // 운반 횟수 판정방법 2
+         // long long moveCount = mid / roundTime;
+         // if((mid % roundTime) >= t[i])moveCount++;
+        long long maxTake = w[i] * moveCount;
+        
+        totalGold += min((long long)g[i], maxTake);             // 주어진 시간 내 옮길 수 있는 금의 양
+        totalSilver += min((long long)s[i], maxTake);           // 주어진 시간 내 옮길 수 있는 은의 양
+        totalMineral += min((long long)g[i] + s[i], maxTake);   // 주어진 시간 내 옮길 수 있는 전체 광물의 양
+    }
+    
+    if(totalGold >= a && totalSilver >= b && totalMineral >= a+b)
+    {
+        return true;
+    }
+    return false;
+}
+
+// 목표 금, 목표 은, 금, 은, 최대 운반광물 무게, 편도 이동 시간
+long long solution(int a, int b, vector<int> g, vector<int> s, vector<int> w, vector<int> t) {
+    long long start = 0;
+    long long end = 10e14 * 3;
+    long long answer = end;
+    
+    while(start <= end)
+    {
+        long long mid = (start + end) / 2;
+        if(BinarySearch(a,b,g,s,w,t,mid) == true)
+        {
+            answer = min(answer, mid);
+            end = mid-1;
+        }
+        else start = mid+1;
+    }
+    
+    return answer;
+}
+```
+
+운반횟수 판정방법 1 에서는 미리 맨 처음 도시에서 신도시로 편도로 운반할 수 있는 광물의 개수와 시간을 더해주는 방법입니다.
+
+운반횟수 판정방법 2 에서는 정해진 시간을 왕복 운반 시간으로 나눠 운반 횟수를 구해주고, 그 나머지가 편도 운반시간 이상이면 개수와 시간을 더해줍니다.
+
+이렇게 이진탐색을 이용한 문제풀이를 해보았습니다.
