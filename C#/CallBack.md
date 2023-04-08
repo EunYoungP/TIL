@@ -10,7 +10,9 @@
 
 * [콜백이란?](#콜백이란)
 
+    * [콜백 코드 구현](#콜백-코드-구현)
 
+    * [Delegate 콜백 구현](#delegate-callback-구현)
 <br><Br>
 
 
@@ -98,8 +100,9 @@ Class Son
 {
     public void Study(studyDelegate del))
     {   
+        // 델리게이트 메서드
         del();
     }
 }
 ```
-
+델리게이트 콜백을 사용하여 Mother 객체를 전달하지 않고 델리게이트에 메서드만 담아 전달해 사용할 수 있습니다.
