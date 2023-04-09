@@ -4,6 +4,8 @@
 
 [2023.03.23 재풀이](#재풀이2)
 
+[2023.04.09 재풀이](#재풀이3)
+
 # __[프로그래머스 LV3] N으로 표현__
 
 DP
@@ -250,4 +252,73 @@ int solution(int N, int number) {
 
 첫 번째, 두 번째 풀이와 달랐던 부분은 주석처리 된 범위기반 반복문을 사용해서 이중벡터를 처리한 점입니다.
 
-주석 아래 반복문대신 주석 안의 내용을 사용해도 답은 같습니다.
+주석 아래 반복문대신 주석 안의 내용을 사용해도 답은 같습니다.<br><Br>
+
+## __재풀이3__
+
+```c++
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+int GetEqualNum(int N, int index)
+{
+    int temp = 0;
+    for(int i = 0; i < index ; i++)
+    {
+        temp += N * pow(10,i);
+    }
+    return temp;
+}
+
+// 사용 숫자, 목표 숫자
+int solution(int N, int number) {
+    int answer = -1;
+    vector<vector<int>> DP(10);
+    
+    // 목표 숫자를 만들 수 있는 N의 최소 개수
+    
+    // 최소 단위는 채워줍니다.
+    DP[1].push_back(GetEqualNum(N, 1));
+    for(int i = 0; i < DP[1].size(); i++)    
+    {
+        if(DP[1][i] == number)
+            return 1;
+    }
+    // 3번 사용 = 같은 숫자 조합 , 1번사용 * 2번사용, 2번사용 * 1번사용
+    // 4번 사용 = 1번사용 * 3번사용, 2번사용 * 2번사용, 3번사용 * 1번사용
+    for(int i = 2; i <= 8; i++)
+    {
+        DP[i].push_back(GetEqualNum(N, i));
+        for(int j = 1; j < i; j++)
+        {
+            for(auto& a : DP[j])
+            {
+                if(a == 0)continue;
+                for(auto& b : DP[i-j])
+                {
+                    if(b == 0)continue;
+                    DP[i].push_back(a + b);
+                    DP[i].push_back(a * b);
+                    DP[i].push_back(a - b);
+                    DP[i].push_back(a / b);
+                }
+            }
+        }
+    }
+    
+    for(int i = 2; i <= 8; i++ )
+    {
+        for(auto& n : DP[i])
+        {
+            if(n == number)
+                return i;
+        }
+    }
+    
+    return answer;
+}
+```
