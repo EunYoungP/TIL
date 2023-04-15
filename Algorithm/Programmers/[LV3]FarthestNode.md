@@ -180,12 +180,13 @@ DFS 풀이로 간단한 테스트들은 모두 통과했습니다.
 
 using namespace std;
 
-bool check[20001];
+
 
 int solution(int n, vector<vector<int>> edge) {
     int answer = 0;
     int MAX = 0;
     vector<vector<int>> v(n + 1);
+    vector<bool> check(20001);
     queue<pair<int, int>> q;
     
     for(size_t i = 0; i < edge.size(); i++){
