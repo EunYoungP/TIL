@@ -12,6 +12,8 @@
 
 * [확장 메서드](#확장-메서드)
 
+    * [주요 사용 방법](#확장-메서드-주요-사용)
+
     * [LINQ 확장 메서드](#linq-확장-메서드)
 
     * [System.String 확장 메서드](#systemstring-클래스-확장-메서드)
@@ -39,6 +41,45 @@
 * __이름과 시그니처가 인터페이스/클래스의 메서드와 동일한__ 확장 메서드는 호출되지 않습니다.
 
 * 확장 메서드는 인스턴스 메서드보다 우선 순위가 낮습니다.<br><BR>
+
+## __확장 메서드 주요 사용__
+
+1.  메서드를 추가할 수 없는 __구조체(enum)__ 형식의 타입도 확장 메서드를 이용할 수 있습니다. 구조체의 함수가 존재하는 것처럼 사용할 수 있습니다.
+
+2. 클래스의 함수를 호출할 때 해당 클래스 인스턴스의 null 체크를 진행해야할 경우 사용하면 코드가 명확해집니다.
+
+```c#
+// 클래스에 선언된 일반 함수입니다.
+class Block
+{
+    public void Exemple1()
+    {
+        Console.WirteLine("클래스의 멤버 함수 입니다.");
+    }
+}
+
+// 확장 메서드입니다.
+public static void Exemple2(Block block)
+{
+    if(block == null)
+        return;
+
+    Console.WriteLine("확장 메서드입니다.");
+}
+
+public void main()
+{
+    Block block;
+
+    // 1. null 체크를 메인 코드에서 실행해야 합니다.
+    if(block!= null)
+        block.Exemple1();
+
+    // 2. block 객체의 null 체크를 하지않고 확장 메서드 안에서 진행할 수 있습니다.
+    block.Exemple2();
+}
+```
+<br><Br>
 
 ### __Linq 확장 메서드__
 

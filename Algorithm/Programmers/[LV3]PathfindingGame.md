@@ -1,4 +1,6 @@
 
+2023.04.18
+
 # __[프로그래머스 LV3] 길찾기 게임__
 
 트리 순회
@@ -86,10 +88,9 @@ struct node
     node *left, *right;
 };
 
-// 노드들을  y, x값 우선수위에 따라 정렬합니다.
 bool comp(struct node a, struct node b)
 {
-    if(a.y < b.y)
+    if(a.y >= b.y)
     {
         if(a.y == b.y)
         {
@@ -104,10 +105,8 @@ bool comp(struct node a, struct node b)
     return false;
 }
 
-// 정렬된 노드들을 이용하여 이진트리를 만듭니다.
-void MakeBinaryTree(node *root, node* child)
+void MakeBinaryTree(node *root, node *child)
 {
-    // 루트 노드보다 x값이 작다면 왼쪽 자식 노드로 설정합니다.
     if(root->x > child->x)
     {
         if(root->left == NULL)
@@ -115,10 +114,8 @@ void MakeBinaryTree(node *root, node* child)
             root->left = child;
             return;
         }
-        // 이미 왼쪽 자식 노드가 차있다면 더 아래 차수의 자식 노드로 설정합니다.
         MakeBinaryTree(root->left, child);
     }
-    // 루트 노드보다 x값이 크다면 오른쪽 자식 노드로 설정합니다.
     else
     {
         if(root->right == NULL)
@@ -135,7 +132,6 @@ void PreOrder(node *nodepointer, vector<int> &answerVector)
 {
     if(nodepointer)
     {
-        // root, left, right 순으로 순회합니다.
         answerVector.push_back(nodepointer->data);
         
         PreOrder(nodepointer->left, answerVector);
@@ -148,7 +144,6 @@ void PastOrder(node *nodepointer, vector<int> &answerVector)
 {
     if(nodepointer)
     {
-        // left, right, root 순으로 순회합니다.
         PastOrder(nodepointer->left, answerVector);
         PastOrder(nodepointer->right, answerVector);
         answerVector.push_back(nodepointer->data);
@@ -179,7 +174,7 @@ vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
     }
     
     vector<int> preVec; PreOrder(root, preVec);
-    vector<int> pastVec; PreOrder(root, pastVec);
+    vector<int> pastVec; PastOrder(root, pastVec);
     answer[0] = preVec;
     answer[1] = pastVec;
     return answer;
