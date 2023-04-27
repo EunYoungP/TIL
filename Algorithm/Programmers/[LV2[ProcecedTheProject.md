@@ -18,22 +18,30 @@
 using namespace std;
 
 // plans의 값들을 할당할 구조체입니다.
-// 시간은 모두 int로 형변환해줍니다.
 struct Node
 {
     string name;
     int time;
     int runTime;
 
+    // 시간은 모두 int로 형변환해 할당하는 생성자입니다.
     Node(string _name, string _time, string _runTime)
     {
         name = _name;
         time = stoi(_time.substr(0,2))*60 + stoi(_time.substr(3,2)); 
-        runTime = stoi(_runTime_.substr(0,2))*60 + stoi(_runTime_.substr(3,2))
+        runTime = stoi(_runTime);
+    }
+
+    // int 형 인자는 그대로 전달됩니다.
+    Node(string _name, int _time, int _runTime)
+    {
+        name = _name;
+        time = _time;
+        runTime = _runTime;
     }
 
     // 시작 시간을 기준으로 오름차순
-    bool operator< (const &Nodee other)
+    bool operator< (const Node& other) const
     {
         return time > other.time;
     }
@@ -80,38 +88,59 @@ int GetRemainingTime(string a, string b)
 
 vector<string> solution(vector<vector<string>> plans) {
     vector<string> answer;
-    stack<pair<string, int>> waitStack;
-    vector<vector<string>>::iterator iter;
     
-    // 시작 시간순으로 정렬
-    //sort(plans.begin(), plans.end(), compare);
-    
-    
-    bool isStudying = false;
-    vector<string> curSubject;
-    while(!plans.empty())
+    priority_queue<Node> pq;
+    stack<Node> waitStack;
+
+    for(int i = 0; i < plans.size(); i++)
     {
-        isStudying = true;
-        // 끝나눈 시간 구해서 시작시간과 비교
-        iter = plans.begin();
-        curSubject = *iter;
-        string startTime = curSubject[1];
-        string runTime = curSubject[2];
-        string curEndTime = GetTime(startTime,runTime);
-        string nextStart = (*(++iter))[1];
-        // 현재 과목 종료전에 다음 과목 시작될 경우
-        if(CompareTime(curEndTime, nextStart))
+        pq.push(Node(plans[i][0], plans[i][1], plans[i][2]));
+    }
+
+    int curTime = 0;
+    while(!pq.empty())
+    {
+        Node curNode = pq.top();
+        //  미룬 과제가 있는 경우
+        if(!waitStack.empty())
         {
-            waitStack.push(make_pair(curSubject[0], GetRemainingTime(curEndTime, nextStart)));
-            plans.erase(plans.begin());
+            Node waitNode = waitStack.top();
+            waitStack.pop();
+            // 현재 과제의 시작시간이 미룬과제의 끝나는 시간보다 같거나 작다면 
+            if(curNode.time > curTime)
+            {
+               pq.push(Node(waitNode.name, curTime, waitNode.runTime));
+               continue;
+            }
+            else
+            {
+                waitStack.push(waitNode);
+            }
+
         }
+        // 미룬 과제가 없는 경우
+        pq.pop();
+        curTime = curNode.time + curNode.runTime;
+
+        Node nextNode = pq.top();
+
+        if(curTime <=  nextNode.time)
+        {
+            answer.push_back(curNode.name);
+        }
+        // 중복되는 과목이 있는 경우
         else
         {
-            if(!waitStack.empty())
-            {
-                
-            }
+            waitStack.push(Node(curNode.name, curNode.time, curNode.runTime - (nextNode.time - curNode.time)));
+            curTime = nextNode.time;
         }
+    }
+
+    while(!waitStack.empty())
+    {
+        Node waitNode = waitStack.top();
+        waitStack.pop();
+        answer.push_back(waitNode.name);
     }
     return answer;
 }
@@ -207,4 +236,7 @@ vector<string> solution(vector<vector<string>> plans) {
 }
 ```
 
-node 구조체는 
+참고 풀이에서는 우선순위 큐를 이용하여 문제를 해결했습니다.
+
+우선순위 큐의 연산자 오버라이딩을 통해서 과제 시작 시간 오름차순으로 정렬이 가능합니다.
+
