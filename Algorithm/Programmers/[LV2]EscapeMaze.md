@@ -157,6 +157,140 @@ dist 이중벡터의 탈출 위치에 저장된 거리를 리턴했습니다.
 
 ## __오답 수정__
 
+레버를 당긴 후 모든 큐의 원소를 초기화하는 과정에서 
 
+for 반복문을 이용한 제거를했었는데 이 부분에서 모든 요소가 제거되지 않아 오류가 발생했습니다.
 
+큐의 모든 원소를 제거할 경우에는 for문을 이용하는 것 보다 while(!q.empty()) 를 사용하여 큐가 빌 때까지 pop을 수행해야 더욱 명확하게 제거할 수 있습니다.
 
+```c++
+// 원래 코드
+for(int i = 0; i < q.size(); i++)
+    q.pop();
+
+// 수정 코드
+while(!q.empty())
+    q.pop();
+}
+```
+
+<Br><Br>
+
+## __수정 전체 코드__
+
+```c++
+#include <string>
+#include <vector>
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+struct POS
+{
+    int x;
+    int y;
+    int dist;
+    POS(int _x, int _y, int _dist){x = _x; y = _y; dist = _dist;}
+};
+
+int solution(vector<string> maps) {
+    // 미로 탈출 최소 시간
+    int answer = 0;
+    
+    vector<vector<char>> mapV(maps.size(), vector<char>(maps[0].size()));
+    vector<vector<int>> dist(maps.size(), vector<int>(maps[0].size()));
+    vector<vector<bool>> visited(maps.size(), vector<bool>(maps[0].size(), false));
+    
+    // 상 우 하 좌
+    int offsetX[] = {0, 1, 0, -1};
+    int offsetY[] = {-1, 0, 1, 0};
+    
+    queue<POS> q;
+    POS startPos = POS(0,0,0);
+    POS exitPos = POS(0,0,0);
+    bool isLevered = false;
+    bool isExit = false;
+    
+    // vector<string> => vector<vector<char>> 재구성
+    for(int i = 0; i < maps.size(); i++)
+    {
+        for(int j = 0; j < maps[0].size(); j++)
+        {
+            if(maps[i][j]== 'S')
+                startPos = POS(j,i,0);
+            else if(maps[i][j]=='E')
+                exitPos = POS(j,i,0);
+            
+            mapV[i][j] = maps[i][j];
+        }
+    }
+    
+    q.push(startPos);
+    visited[startPos.y][startPos.x] = true;
+    
+    while(!q.empty())
+    {
+        POS curPos = q.front();
+        q.pop();
+        int curX = curPos.x;
+        int curY = curPos.y;
+        int curDist = curPos.dist;
+        
+        if(isLevered && mapV[curY][curX] == 'E')
+        {
+            isExit = true;
+            break;
+        }
+        
+        for(int i= 0; i < 4; i++)
+        {
+            int nextX = curX + offsetX[i];
+            int nextY = curY + offsetY[i];
+            
+            // 맵 범위 예외 처리
+            if(nextX < 0 || nextY < 0 || nextX >= mapV[0].size() || nextY >= mapV.size())
+                continue;
+            
+            // 첫 레버 위치 도착
+            if( isLevered == false && mapV[nextY][nextX] == 'L')
+            {
+                isLevered = true;
+                visited = vector<vector<bool>>(maps.size(), vector<bool>(maps[0].size(), false));
+                
+                //for(int k = 0; k < q.size(); k++)
+                while(!q.empty())
+                    q.pop();
+                
+                q.push(POS(nextX, nextY, curDist+1));
+                dist[nextY][nextX] = curDist+1;
+                visited[nextY][nextX] =true;
+                break;
+            }
+            
+            // 벽 예외처리
+            if(mapV[nextY][nextX] == 'X')
+                continue;
+            
+            // 방문 위치 예외처리
+            if(visited[nextY][nextX] == true)
+                continue;
+            
+            dist[nextY][nextX] = curDist + 1;
+            visited[nextY][nextX] = true;
+            q.push(POS(nextX, nextY, curDist + 1));
+        }
+    }
+    
+    if(isLevered && isExit)
+    {
+        answer = dist[exitPos.y][exitPos.x];
+    }
+    else
+    {
+        answer = -1;
+    }
+        
+    return answer;
+}
+```
