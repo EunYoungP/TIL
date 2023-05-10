@@ -56,5 +56,47 @@ vector<int> solution(vector<int> numbers) {
 
 ___시간복잡도O(N^2)___ == ___O(1000000^2) 가 되어 시간 초과가 일어난것 같습니다.
 
-각 원소를 기준으로 뒷큰수를 찾아야하기 때문에 필수로 필요한 반복문을 하나로 줄여 풀이하는 방법을 찾아야 합니다.
+각 원소를 기준으로 뒷큰수를 찾아야하기 때문에 필수로 필요한 반복문을 하나로 줄여 풀이하는 방법을 찾아야 합니다.<bR><bR>
 
+
+## __수정 코드__
+```C++
+#include <string>
+#include <vector>
+#include <stack>
+
+using namespace std;
+
+vector<int> solution(vector<int> numbers) {
+    vector<int> answer(numbers.size());
+    stack<int> stk;
+    
+    for(int i=numbers.size()-1;i>=0;i--)
+    {
+        while(1)
+        {
+            if(stk.empty())
+            {
+                answer[i] = -1;
+                break;
+            }
+            if(stk.top()>numbers[i])
+            {
+                answer[i] = stk.top();
+                break;
+            }
+            stk.pop();
+        }
+        stk.push(numbers[i]);
+    }
+    return answer;
+}
+```
+
+스택을 이용하여 2중 포문을 줄여 시간복잡도를 줄일 수 있었습니다.
+
+각 for 반복마다 스택에 값을 채우고,
+
+while문에서 조건 검사를 해 스택에 존재하는 요소들만 검사하고 부합하지 않으면 pop()해주어 
+
+검사해야할 요소들을 줄였습니다.
