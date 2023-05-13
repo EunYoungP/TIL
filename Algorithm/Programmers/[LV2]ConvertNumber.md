@@ -51,14 +51,13 @@ int solution(int x, int y, int n) {
 
 위 풀이에서는 x를 y로 만드는 과정으로 풀이했지만,
 
-y에서 주어진 연산을 반대로 실행하여 나눗셈의 연산 결과로 나오는 float의 경우를 제외하고 검색하는 편이
-
-더 빠를수 있습니다.
+y에서 주어진 연산을 반대로 실행하여 나눗셈의 연산 결과로 나오는 float의 경우를 제외한다면 검색이 더 빠를수 있습니다.
 
 해당 풀이를 y에서 x를 찾는 과정,
 
-bfs/dfs로 변환하여 풀이해봐야 비교할 수 있을것 같습니다.
+bfs/dfs로 변환하여 풀이해봐야 비교할 수 있을것 같습니다.<BR><BR>
 
+## __BFS 풀이 방법__
 ```c++
 #include <string>
 #include <vector>
@@ -76,13 +75,13 @@ int solution(int x, int y, int n)
          q.pop();
 
         if(cur == y) 
-            return vis[cur];//시작하자마자 도착할수도있다.
+            return vis[cur];    //시작하자마자 도착할수도있다.
 
         int dx[3] = {cur + n, cur * 2, cur * 3};
         for(int dir=0;dir<3;dir++)
         {
             int nx = dx[dir];
-            if(nx > y || vis[nx]!= 0) continue;//범위를 넘어가거나 이미 방문한적 있다면
+            if(nx > y || vis[nx]!= 0) continue; //범위를 넘어가거나 이미 방문한적 있다면
             vis[nx] = vis[cur] + 1;
             q.push(nx);
         }
