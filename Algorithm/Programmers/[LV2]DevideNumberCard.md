@@ -82,8 +82,8 @@ int solution(vector<int> arrayA, vector<int> arrayB) {
     GetDevisor(bGCD, &devisorB);
     
     // 공약수들 내림차순 정렬
-    sort(devisorA.begin(), devisorA.end(), greater<int>());
-    sort(devisorB.begin(), devisorB.end(), greater<int>());
+    sort(devisorA.begin(), devisorA.end());
+    sort(devisorB.begin(), devisorB.end());
     
     bool isDevide = false;
     int minB = arrayB[arrayB.size()-1];
@@ -106,6 +106,7 @@ int solution(vector<int> arrayA, vector<int> arrayB) {
         if(isDevide == false && answer < cur)
         {
             answer = cur;
+            break;
         }
     }
     
@@ -124,6 +125,7 @@ int solution(vector<int> arrayA, vector<int> arrayB) {
         if(isDevide == false && answer < cur)
         {
             answer = cur;
+            break;
         }
     }
     return answer;
@@ -136,9 +138,7 @@ int solution(vector<int> arrayA, vector<int> arrayB) {
 
 각 배열의 따라서 최대공약수를 구해줍니다. 그리고 그 최대공약수의 약수들도 해당 배열을 모두 나눌 수 있는 수들이기 때문에 구해줍니다.<br><Br>
 
-그리고 구해진 배열의 공약수들의 묶음이 나머지 다른 배열의 모든 요소들을 나눌 수 없는 수여야합니다.
-
-최대값을 구해야 하기 때문에 각 숫자카드 배열과 공약수들 배열을 모두 내림차순으로 정렬합니다.
+그리고 구해진 배열의 공약수들의 묶음이 나머지 다른 배열의 모든 요소들을 나눌수 없는 숫자여야합니다.
 
 그리고 공약수들을 순회하면서 다른 숫자카드 배열을 순회하며 모두 나눌 수 없는지 검사합니다.<br><BR>
 
@@ -147,6 +147,7 @@ int solution(vector<int> arrayA, vector<int> arrayB) {
 조건에 만족하는 공약수가 나온다면 answer과 비교하여 더 크면 answer에 값을 할당해줍니다.<br><Br>
 
 이렇게 두개의 배열을 모두 검사해주면 최대값인 answer이 결과로 도출됩니다.
+
 
 
 
