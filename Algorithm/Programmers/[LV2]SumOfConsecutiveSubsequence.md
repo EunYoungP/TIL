@@ -8,7 +8,7 @@
 
 ## __문제__
 
-[연속 부분 수열 합](https://school.programmers.co.kr/learn/courses/30/lessons/131701)<br><Br>
+[연속 부분 수열 합](https://school.programmers.co.kr/learn/courses/30/lessons/178870)<br><Br>
 
 
 ## __나의 풀이__
