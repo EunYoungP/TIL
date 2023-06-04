@@ -72,4 +72,78 @@ int solution(vector<int> queue1, vector<int> queue2) {
     return answer;
 }
 ```
+<br><Br>
 
+## __오류 수정__
+```c++
+#include <string>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+int solution(vector<int> queue1, vector<int> queue2) {
+    // 큐의 원소의 합이 같게 하는 최소 작업 횟수
+    // pop-insert => 1회
+    long long answer = -2;
+    queue<int> q1;
+    queue<int> q2;
+    
+    // 1. 두 큐의 모든 요소의 합을 구합니다.
+    int total = 0;
+    long long sum1 = 0;
+    long long sum2 = 0;
+    
+    for(int i = 0; i < queue1.size(); i++)
+    {
+        sum1 += queue1[i];
+        total += queue1[i];
+        //q1.push(queue1[i]);
+        sum2 += queue2[i];
+        total += queue2[i];
+        //q2.push(queue2[i]);
+    }
+    
+    if(total % 2 == 1)
+        return -1;
+    
+    int index1 = 0;
+    int index2 = 0;
+    long long calcNum = 0;
+    while(calcNum <= (queue1.size() << 2))
+    {
+        // if(q1.empty() || q2.empty())
+        //     return -1;
+        
+        if(sum1 < sum2)
+        {
+            sum1 += queue2[index2];
+            sum2 -= queue2[index2];
+            queue1.push_back(queue2[index2++]);
+            // int temp = q2.front();
+            // q2.pop();
+            // sum2 -= temp;
+            // q1.push(temp);
+            // sum1 += temp;
+        }
+        else if(sum1 > sum2)
+        {
+            sum2 += queue1[index1];
+            sum1 -= queue1[index1];
+            queue2.push_back(queue1[index1++]);
+            // int temp = q1.front();
+            // q1.pop();
+            // sum1 -= temp;
+            // q2.push(temp);
+            // sum2 += temp;
+        }
+        calcNum++;
+        
+        if(sum1 == sum2)
+        {
+            return calcNum;
+        }
+    }
+    return -1;
+}
+```
