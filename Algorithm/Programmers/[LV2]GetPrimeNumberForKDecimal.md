@@ -18,6 +18,7 @@
 
 using namespace std;
 
+// 소수 판별
 bool isPrime(long x)
 {
     if(x == 1)
@@ -36,6 +37,7 @@ int solution(int n, int k) {
     // 소수의 개수
     int answer = 0;
     
+    // 1. k진수 변환
     vector<long> s;
     while(n / k != 0)
     {
@@ -44,25 +46,26 @@ int solution(int n, int k) {
     }
     s.push_back(n % k);
     
+    // 2. 구해진 소수들을 반대로 정렬하여 문자열 변환
     string change;
     for(int i = s.size()-1; i >= 0; i--)
     {
         change += to_string(s[i]);
     }
     
-    // P0P/P0/0P/P
-    // 소수 찾기
+    // P0P /P0 /0P /P
+    // 3. 소수 개수 찾기
     int index = 0;
-    vector<string> decimals(s.size());
+    vector<string> primes(s.size());
     for(int i = 0; i < change.size(); i++)
     {
         if(change[i] != '0')
         {
-            decimals[index] += change[i];
+            primes[index] += change[i];
             
             if(change[i+1] == '0' || i+1 >= change.size() )
             {
-                if(isPrime(stol(decimals[index])))
+                if(isPrime(stol(primes[index])))
                 {
                     answer++;
                 }
